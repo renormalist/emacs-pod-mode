@@ -1,0 +1,10 @@
+2003-05-02  v0.2
+
+	* font-lock-function-name-face for E<> entities
+	* fixed handling of doublequoted strings (cpan #2469)
+	* small regex finetuning
+
+2003-04-25  v0.1
+
+	* initial version
+	* mostly syntax highlighting
