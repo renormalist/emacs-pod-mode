@@ -78,7 +78,7 @@
 ;; syntax highlighting: standard keywords
 (defconst pod-font-lock-keywords-1
   '(
-    ("^=\\(head1\\|head2\\|item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\)" 0 font-lock-keyword-face)
+    ("^=\\(head1\\|head2\\|head3\\|head4\\|item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\|encoding\\)" 0 font-lock-keyword-face)
     ("^[ \t]+\\(.*\\)$" 1 font-lock-type-face)
     )
   "Minimal highlighting expressions for POD mode.")
@@ -87,7 +87,7 @@
 (defconst pod-font-lock-keywords-2
   (append pod-font-lock-keywords-1
 	  '(
-	    ("^=\\(head1\\|head2\\|item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\)\\(.*\\)" 2 font-lock-comment-face)
+	    ("^=\\(head1\\|head2\\|head3\\|head4\\|item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\)\\(.*\\)" 2 font-lock-comment-face)
 	    ))
   "Additional Keywords to highlight in POD mode.")
 
@@ -95,9 +95,10 @@
 (defconst pod-font-lock-keywords-3
   (append pod-font-lock-keywords-2
 	  '(
-	    ("[IBSCF]<\\([^>]*\\)>" 1 font-lock-reference-face)
-	    ("L<\\([^|>]*|\\)?\\([^>]+\\)>" 2 font-lock-reference-face)
-	    ("L<\\([^|>]*\\)|\\([^>]*\\)>" 1 font-lock-doc-string-face)
+	    ("[IBCFXZS]<\\([^>]*\\)>" 1 font-lock-reference-face)
+	    ("L<\\([^|>]*|\\)?\\([^|>]*|\\)?\\([^>]+\\)>" 3 font-lock-function-name-face)
+	    ("L<\\([^|>]*|\\)?\\([^|>]*|\\)?\\([^>]+\\)>" 2 font-lock-reference-face)
+	    ("L<\\([^|>]*|\\)?\\([^|>]*\\)|\\([^>]*\\)>" 1 font-lock-doc-string-face)
 	    ("E<\\([^>]*\\)>" 1 font-lock-function-name-face)
 	    ("\"\\([^\"]+\\)\"" 0 font-lock-string-face)
 	    ))

@@ -28,7 +28,7 @@ into your ~/.emacs
 
 Author:  Steffen Schwigon <schwigon@webit.de>
 
-Version: 0.2
+Version: 0.3
 License: GPL
 Tested:  i386-linux       with XEmacs    21.4
          i386-linux       with GNU Emacs 21.2.1

@@ -1,0 +1,172 @@
+=pod 
+
+=head1 NAME
+
+LibCPV::Categorizer - Class for Hierarchical CPV-Number
+Categorizing via L<AI::Categorizer|AI::Categorizer|URLNAME>.
+
+=head1 SYNOPSIS
+
+  my $doc_set = new LibCPV::Categorizer::DocumentSet
+  ({
+    dirname         => '/path/to/docset/dir'
+  });
+  $doc_set->add_docs_from_dir;
+
+  my $categorizer = new LibCPV::Categorizer
+  ({
+    document_set         => $doc_set,
+    learner_rootdir      => '/path/to/learner/output/dir'
+  });
+  $categorizer->train;
+
+=head1 INTRODUCTION
+
+We use L<AI::Categorizer|AI::Categorizer>. Because AI::Categorizer
+doesn't do hierarchical categorization we added our own hierarchy
+schema based on the semantics of "cpv numbers".
+
+For introduction to cpv numbers see
+I<http://simap.eu.int/EN/pub/src/welcome.htm>.
+
+In LibCPV::Categorizer we try to use a consistent wording.
+Here are the most important phrases:
+
+B<learner> - An AI::Categorizer instance used to learn (or train).
+
+B<category> - a cpv number, simply an 8-digit-number. CPV numbers are
+hierarchically built. The first 2 digits form a common level of
+accuracy, then each following digit forms another accuracy level.
+We derive the word "group" from that accuracy level definition.
+
+B<document> - a single class transporting the content of a single
+textblock that is assigned to zero, one or more categories.
+
+B<document set> - mainly a collection of documents, with additional
+functions to work on the set.
+
+B<group> - A group is a set of documents each belonging to a cpv
+number that starts with the same first digits of a given precision
+(see it as kind of a "cpv prefix").
+
+B<sub group> - A group of documents that have one more digit in
+accuracy than a given cpv or document.
+
+How we do training:
+
+We have a learner instance on root level which only knows categories
+containing of the first two digits of a cpv. All documents are
+considered by that learner. Those two digit accuracy gives
+theoretically a maximum of 99 groups, in real live there are only
+about 25 groups.
+
+Each group gets its own learner instance which trains only with the
+documents in that group and categorizes into (maximally) 9 sub
+categories, which is the next digit of the cpv.
+
+So the document set creates a tree of learners.
+
+If all possible cpv numbers possible with 8 digits would be used, the
+tree would have one root level learner categorizing into 99
+categories, 99 learners at the next level each categorizing into 9
+categories, therefore 9 learnes in each of the 99 categories, and in
+each following level 9 more learners for each category.
+
+That would result in 100.000.000 (100 Millions) categories or learners
+at the last level. In real live there are only about 8000 categories
+used so tha last level has maximal those 8000 categories and each
+level above some less. 
+
+=head1 DESCRIPTION
+
+Z<>
+
+=head2 new
+
+DESCRIPTION
+
+Constructor.
+
+Accepts hashref with following arguments.
+
+ARGUMENTS
+
+I<document_set> - Object of L<DocumentSet|DocumentSet>.
+
+I<learner_rootdir> - Directory under which a directory tree
+is built, containing the learn results for each group.
+
+
+I<current_learner>
+
+
+I<max_docs_per_learner>
+
+
+RETURN
+
+__
+
+
+=head2 restore_learner
+
+DESCRIPTION
+
+__
+
+ARGUMENTS
+
+__
+
+RETURN
+
+__
+
+=head2 init
+
+DESCRIPTION
+
+__
+
+ARGUMENTS
+
+__
+
+RETURN
+
+__
+
+=head2 save_current_learner
+
+DESCRIPTION
+
+__
+
+ARGUMENTS
+
+__
+
+RETURN
+
+__
+
+=head2 train
+
+DESCRIPTION
+
+__
+
+ARGUMENTS
+
+__
+
+RETURN
+
+__
+
+=head1 AUTHOR
+
+  Written 2003 by Steffen Schwigon, Thomas Flasche.
+
+=cut
+
