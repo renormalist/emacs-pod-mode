@@ -9,3 +9,6 @@ dist:
 	@cp pod-mode.el README ChangeLog $(DISTNAME)/
 	@tar czf $(DISTNAME).tgz $(DISTNAME)
 	@/bin/rm -fr $(DISTNAME)
+
+clean:
+	/bin/rm -f pod-mode-?.?.tgz
