@@ -3,7 +3,7 @@
 =head1 NAME
 
 LibCPV::Categorizer - Class for Hierarchical CPV-Number
-Categorizing via L<AI::Categorizer|AI::Categorizer|URLNAME>.
+Categorizing via L<AI::Categorizer|AI::Categorizer>.
 
 =head1 SYNOPSIS
 

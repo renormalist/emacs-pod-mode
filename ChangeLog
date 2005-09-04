@@ -1,3 +1,10 @@
+2005-08-22  Steffen Schwigon  <schwigon@cpan.org>
+
+	* v0.4
+	* imenu support, thanks to Slaven Rezic
+	* mini regex optimizations
+	* fixed incorrect regexes around L<>
+
 2005-04-01  Steffen Schwigon  <schwigon@cpan.org>
 
 	* v0.3
