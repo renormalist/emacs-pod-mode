@@ -9,7 +9,7 @@
 ;;; Version: 0.4
 ;;; CVS Version: $Id$
 ;;; Keywords: perl pod
-;;; X-URL: not distributed yet
+;;; X-URL: http://search.cpan.org/~schwigon/pod-mode/
 
 ;;; This program is free software; you can redistribute it and/or modify
 ;;; it under the terms of the GNU General Public License as published by
