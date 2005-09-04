@@ -6,7 +6,8 @@
 ;;; Copyright 2003-2005 Steffen Schwigon
 
 ;;; Author: Steffen Schwigon <schwigon@webit.de>
-;;; Version: $Id$
+;;; Version: 0.4
+;;; CVS Version: $Id$
 ;;; Keywords: perl pod
 ;;; X-URL: not distributed yet
 
