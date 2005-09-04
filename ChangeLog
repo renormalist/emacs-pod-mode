@@ -2,8 +2,8 @@
 
 	* v0.4
 	* imenu support, thanks to Slaven Rezic
-	* mini regex optimizations
-	* fixed incorrect regexes around L<>
+	* minor regex optimizations
+	* fixed incorrect regexes for L<>
 
 2005-04-01  Steffen Schwigon  <schwigon@cpan.org>
 
