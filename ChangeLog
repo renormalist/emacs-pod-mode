@@ -1,3 +1,9 @@
+2008-05-20  Steffen Schwigon  <ss5@renormalist.net>
+
+	* v0.5
+	* add META.yml to describe this distribution on CPAN
+	* add support for outline-minor-mode (#21828, Slaven Rezic)
+
 2005-08-22  Steffen Schwigon  <schwigon@cpan.org>
 
 	* v0.4

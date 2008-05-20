@@ -3,11 +3,10 @@
 ;;; It mainly defines a grammar for syntax highlighting.
 ;;; POD is the Plain Old Documentation format of Perl.
 
-;;; Copyright 2003-2005 Steffen Schwigon
+;;; Copyright 2003-2008 Steffen Schwigon
 
-;;; Author: Steffen Schwigon <schwigon@webit.de>
-;;; Version: 0.4
-;;; CVS Version: $Id$
+;;; Author: Steffen Schwigon <ss5@renormalist.net>
+;;; Version: 0.5
 ;;; Keywords: perl pod
 ;;; X-URL: http://search.cpan.org/~schwigon/pod-mode/
 
@@ -128,6 +127,18 @@
     (set-syntax-table pod-mode-syntax-table)
     ))
 
+(defun pod-add-support-for-outline-minor-mode ()
+  "Provides additional menus from =head lines in outline-minor-mode"
+  (make-local-variable 'outline-regexp)
+  (setq outline-regexp "=head[1234] ")
+  (make-local-variable 'outline-level)
+  (setq outline-level
+        (function (lambda ()
+                    (save-excursion
+                      (string-to-int (buffer-substring (+ (point) 5) (+ (point) 6)))
+                      ))))
+  )
+
 ;; main
 (defun pod-mode ()
   "Major mode for editing POD files (Plain Old Documentation for Perl)."
@@ -142,7 +153,9 @@
   (setq major-mode 'pod-mode)
   (setq mode-name "POD")
   (setq imenu-generic-expression '((nil "^=head[1234] +\\(.*\\)" 1)))
-  (run-hooks 'pod-mode-hook))
+  (run-hooks 'pod-mode-hook)
+  (pod-add-support-for-outline-minor-mode)
+  )
 
 (provide 'pod-mode)
 
