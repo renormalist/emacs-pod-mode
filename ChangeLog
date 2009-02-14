@@ -1,3 +1,16 @@
+2009-02-15  Steffen Schwigon  <ss5@renormalist.net>
+
+	* v0.502
+
+	* more meta fiddling, although it still ignores the "abstract:"
+
+2008-07-27  Steffen Schwigon  <ss5@renormalist.net>
+
+	* v0.501
+	* fixed link to the Emacs Language Mode Creation Tutorial
+	(after resurrecting and hosting it)
+	* fiddle with META.yml to help the indexer
+
 2008-05-20  Steffen Schwigon  <ss5@renormalist.net>
 
 	* v0.5

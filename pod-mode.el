@@ -6,7 +6,7 @@
 ;;; Copyright 2003-2008 Steffen Schwigon
 
 ;;; Author: Steffen Schwigon <ss5@renormalist.net>
-;;; Version: 0.5
+;;; Version: 0.502
 ;;; Keywords: perl pod
 ;;; X-URL: http://search.cpan.org/~schwigon/pod-mode/
 
@@ -32,7 +32,12 @@
 
 ;;; This mode is built with help of the
 ;;; "Emacs language mode creation tutorial" at
-;;; http://two-wugs.net/emacs/mode-tutorial.html
+;;;
+;;;   http://two-wugs.net/emacs/mode-tutorial.html
+;;;
+;;; which disapeared from the net and is now hosted at
+;;;
+;;;   http://renormalist.net/cgi-bin/twiki/view/Renormalist/EmacsLanguageModeCreationTutorial
 ;;;
 ;;; Regexes are defined for the following font-lock-faces:
 ;;;
