@@ -26,23 +26,15 @@ into your ~/.emacs
 
 -------------------------------------------------------------
 
-Author:  Steffen Schwigon <schwigon@webit.de>
+Author:  Steffen Schwigon <ss5@renormalist.net>
 License: GPL
 Tested:  i386-linux       with XEmacs    21.4
          i386-linux       with GNU Emacs 21.2.1
          i386-windows-w2k with XEmacs    21.4
 
-This mode is built with help of the
-"Emacs language mode creation tutorial" at
-http://two-wugs.net/emacs/mode-tutorial.html
+This mode is built with help of the "Emacs language mode creation
+tutorial" written by Scott Andrew Borton, now hosted at
 
-Regexes are defined for the following font-lock-faces:
-
-  font-lock-keyword-face
-  font-lock-type-face
-  font-lock-comment-face
-  font-lock-reference-face
-  font-lock-doc-string-face
-  font-lock-function-name-face
+  http://renormalist.net/cgi-bin/twiki/view/Renormalist/EmacsLanguageModeCreationTutorial
 
 I'm interested in comments/enhancements/bugfixes.

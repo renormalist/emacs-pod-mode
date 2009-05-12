@@ -7,10 +7,10 @@ all:
 dist:
 	@mkdir -p $(DISTNAME)
 	@V=$(VERSION) ; echo VERSION: $$V
-	@V=$(VERSION) perl -pni -e 's/^ version: \d+\.\d+/ version: $$ENV{V}/' META.yml
+	@V=$(VERSION) perl -pni -e 's/^(    |)version: \d+\.\d+/$$1version: $$ENV{V}/' META.yml
 	@cp pod-mode.el README ChangeLog META.yml $(DISTNAME)/
 	@tar czf $(DISTNAME).tgz $(DISTNAME)
 	@/bin/rm -fr $(DISTNAME)
 
 clean:
-	/bin/rm -f pod-mode-?.?.tgz
+	/bin/rm -f pod-mode-?.*.tgz
