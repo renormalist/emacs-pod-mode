@@ -3,7 +3,7 @@
 ;;; It mainly defines a grammar for syntax highlighting.
 ;;; POD is the Plain Old Documentation format of Perl.
 
-;;; Copyright 2003-2008 Steffen Schwigon
+;;; Copyright 2003-2009 Steffen Schwigon
 
 ;;; Author: Steffen Schwigon <ss5@renormalist.net>
 ;;; Version: 0.502
