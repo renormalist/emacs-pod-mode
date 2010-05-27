@@ -41,50 +41,52 @@
 (defun pod-cperl-chunk-region (pos)
   "Determine type and limit of current chunk at POS."
     (let ((mode 'pod-mode)
-	(start (point-min))
-	(end (point-max))
-        (info "")
-    (save-excursion
-      (save-restriction
-	(widen)
-	(goto-char pos)
-        (cond
-         ;; inside verbatim
-         ((save-excursion
-            (beginning-of-line)
-            (looking-at " "))
-          (progn
-            (setq info "--verbatim--")
-            (setq mode 'cperl-mode)
-            ;;(setq start (match-beginning 0))
-            (if (re-search-backward "^[^ ]" nil t)
-                (setq start (line-beginning-position 2)))
-            (if (re-search-forward "^[^ ]" nil t)
-                (setq end (line-end-position)))))
-         ;; outside verbatim, in pod
-         ((save-excursion
-            (beginning-of-line)
-            (looking-at "[^ ]"))
-          (progn
-            (setq info "--pod--")
-            (setq mode 'pod-mode)
-            ;;(setq start (match-beginning 0))
-            (if (re-search-backward "^[ ]" nil t)
-                (setq start (line-beginning-position 2)))
-            (if (re-search-forward "^[ ]" nil t)
-                (setq end (line-end-position 0)))))
+          (start (point-min))
+          (end (point-max))
+          (info ""))
+      (save-excursion
+        (save-restriction
+          (widen)
+          (goto-char pos)
+          (cond
+           ;; inside verbatim
+           ((save-excursion
+              (beginning-of-line)
+              (looking-at " "))
+            (progn
+              (message "--verbatim--")
+              ;;(message info)
+              (setq mode 'cperl-mode)
+              ;;(setq start (match-beginning 0))
+              (if (re-search-backward "^[^ ]" nil t)
+                  (setq start (line-beginning-position 2)))
+              (if (re-search-forward "^[^ ]" nil t)
+                  (setq end (line-end-position)))))
+           ;; outside verbatim, in pod
+           ((save-excursion
+              (beginning-of-line)
+              (looking-at "[^ ]"))
+            (progn
+              (message "--pod--")
+              ;;(message info)
+              (setq mode 'pod-mode)
+              ;;(setq start (match-beginning 0))
+              (if (re-search-backward "^[ ]" nil t)
+                  (setq start (line-beginning-position 2)))
+              (if (re-search-forward "^[ ]" nil t)
+                  (setq end (line-end-position 0)))))
 
-         (t
-          (progn
-            (setq info "--default--")
-            (beginning-of-line)
-            (if (re-search-forward "^[ ]" nil t)
-                (setq end (point))
-              (setq end (point-max)
-                    mode 'cperl-mode))))
-         )
-        (message info)
-        (multi-make-list mode start end)))))
+           (t
+            (progn
+              (message "--default--")
+              ;;(message info)
+              (beginning-of-line)
+              (if (re-search-forward "^[ ]" nil t)
+                  (setq end (point))
+                (setq end (point-max)
+                      mode 'cperl-mode))))
+           )
+          (multi-make-list mode start end)))))
 
 ;;;###autoload
 (defun pod-cperl-mode ()
