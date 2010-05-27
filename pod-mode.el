@@ -70,6 +70,56 @@
 
 ;;; Code:
 
+(require 'multi-mode)
+(defun pod-chunk-region (pos)
+  "Determine type and limit of current chunk at POS."
+    (let ((mode 'pod-mode)
+	(start (point-min))
+	(end (point-max)))
+    (save-excursion
+      (save-restriction
+	(widen)
+	(goto-char pos)
+	;; Look for a \begin{code} or \end{code} line.
+	;; Fixme: It may be better for point at end of \begin{code} to
+	;; be code rather than doc.
+	(cond
+	 ;; On the line is doc.
+	 ((save-excursion
+	    (beginning-of-line)
+	    (looking-at "^ *\\(?:\\(END\\)\\|\\(BEGIN\\)\\)PERL$"))
+	  (if (match-beginning 1)	; \end line
+	      (progn
+		(setq start (point))
+		(if (re-search-forward "^ *BEGINPERL$" nil t)
+		    (setq end (line-end-position))))
+	    ;; \begin line
+	    (setq end (1- (line-beginning-position 2)))
+	    (if (re-search-backward "^ *ENDPERL$" nil t)
+		(setq start (match-beginning 0)))))
+	 ;; Between \begin and \end (in either order).
+	 ((re-search-backward "^ *\\(?:\\(END\\)\\|\\(BEGIN\\)\\)PERL$"
+			      nil t)
+	  (if (match-beginning 1)	; \end line
+	      (progn
+		(setq start (match-beginning 0))
+		(if (re-search-forward "^ *BEGINPERL$" nil t)
+		    (setq end (line-end-position))))
+	    ;; \begin line
+	    (setq start (1- (line-beginning-position 2))
+		  mode 'cperl-mode)
+	    (if (re-search-forward "^ *ENDPERL$" nil t)
+		(setq end (1- (match-beginning 0))))))
+	 ;; Doc chunk at start.
+	 (t
+	  (beginning-of-line)
+	  (if (re-search-forward "^ *BEGINPERL$" nil t)
+	      (setq end (point))
+	    (setq end (point-max)
+		  mode 'cperl-mode))))
+	(multi-make-list mode start end)))))
+
+
 ;; default variables
 (defvar pod-mode-hook nil)
 
@@ -160,6 +210,12 @@
   (setq imenu-generic-expression '((nil "^=head[1234] +\\(.*\\)" 1)))
   (run-hooks 'pod-mode-hook)
   (pod-add-support-for-outline-minor-mode)
+
+  (set (make-local-variable 'multi-mode-alist)
+       '((pod-mode . pod-chunk-region)
+	 (cperl-mode . nil)))
+  (multi-mode-install-modes)
+  ;; (font-lock-fontify-buffer)
   )
 
 (provide 'pod-mode)
