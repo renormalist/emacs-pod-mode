@@ -3,8 +3,9 @@
 ;; Copyright (C) 2003, 2007, 2009  Free Software Foundation, Inc.
 
 ;; Author: Steffen Schwigon
+;; Frivolously stolen from haskell-latex-mode. 
+;; Respective credits follow:
 
-;; Frivolously stolen from haskell-latex-mode. Respective credits:
 ;; Author: Dave Love <fx@gnu.org>
 
 ;; Keywords: languages, wp
@@ -41,53 +42,53 @@
   "Determine type and limit of current chunk at POS."
     (let ((mode 'pod-mode)
 	(start (point-min))
-	(end (point-max)))
+	(end (point-max))
+        (info "")
     (save-excursion
       (save-restriction
 	(widen)
 	(goto-char pos)
-	;; Look for a \begin{code} or \end{code} line.
-	;; Fixme: It may be better for point at end of \begin{code} to
-	;; be code rather than doc.
-	(cond
-	 ;; On the line is doc.
-	 ((save-excursion
-	    (beginning-of-line)
-	    (looking-at "^ *\\(?:\\(END\\)\\|\\(BEGIN\\)\\)PERL$"))
-	  (if (match-beginning 1)	; \end line
-	      (progn
-		(setq start (point))
-		(if (re-search-forward "^ *BEGINPERL$" nil t)
-		    (setq end (line-end-position))))
-	    ;; \begin line
-	    (setq end (1- (line-beginning-position 2)))
-	    (if (re-search-backward "^ *ENDPERL$" nil t)
-		(setq start (match-beginning 0)))))
-	 ;; Between \begin and \end (in either order).
-	 ((re-search-backward "^ *\\(?:\\(END\\)\\|\\(BEGIN\\)\\)PERL$"
-			      nil t)
-	  (if (match-beginning 1)	; \end line
-	      (progn
-		(setq start (match-beginning 0))
-		(if (re-search-forward "^ *BEGINPERL$" nil t)
-		    (setq end (line-end-position))))
-	    ;; \begin line
-	    (setq start (1- (line-beginning-position 2))
-		  mode 'cperl-mode)
-	    (if (re-search-forward "^ *ENDPERL$" nil t)
-		(setq end (1- (match-beginning 0))))))
-	 ;; Doc chunk at start.
-	 (t
-	  (beginning-of-line)
-	  (if (re-search-forward "^ *BEGINPERL$" nil t)
-	      (setq end (point))
-	    (setq end (point-max)
-		  mode 'cperl-mode))))
-	(multi-make-list mode start end)))))
+        (cond
+         ;; inside verbatim
+         ((save-excursion
+            (beginning-of-line)
+            (looking-at " "))
+          (progn
+            (setq info "--verbatim--")
+            (setq mode 'cperl-mode)
+            ;;(setq start (match-beginning 0))
+            (if (re-search-backward "^[^ ]" nil t)
+                (setq start (line-beginning-position 2)))
+            (if (re-search-forward "^[^ ]" nil t)
+                (setq end (line-end-position)))))
+         ;; outside verbatim, in pod
+         ((save-excursion
+            (beginning-of-line)
+            (looking-at "[^ ]"))
+          (progn
+            (setq info "--pod--")
+            (setq mode 'pod-mode)
+            ;;(setq start (match-beginning 0))
+            (if (re-search-backward "^[ ]" nil t)
+                (setq start (line-beginning-position 2)))
+            (if (re-search-forward "^[ ]" nil t)
+                (setq end (line-end-position 0)))))
+
+         (t
+          (progn
+            (setq info "--default--")
+            (beginning-of-line)
+            (if (re-search-forward "^[ ]" nil t)
+                (setq end (point))
+              (setq end (point-max)
+                    mode 'cperl-mode))))
+         )
+        (message info)
+        (multi-make-list mode start end)))))
 
 ;;;###autoload
 (defun pod-cperl-mode ()
-  "Mode for editing `literate Haskell' with LaTeX conventions."
+  "Mode for editing Perl inside POD verbatim blocks."
   (interactive)
   (set (make-local-variable 'multi-mode-alist)
        '((cperl-mode . pod-cperl-chunk-region)
