@@ -6,11 +6,11 @@ Hot stuff.
 
 See this:
 
-  If all possible cpv numbers possible with 8 digits would be used, the
-  tree would have one root level learner categorizing into 99
-  9categories, 99 learners at the next level each categorizing into 9
-  categories, therefore 9 learnes in each of the 99 categories, and in
-  each following level 9 more learners for each category.
+  # If all possible cpv numbers possible with 8 digits would be used, the
+  # tree would have one root level learner categorizing into 99
+  # categories, 99 learners at the next level each categorizing into 9
+  # categories, therefore 9 learnes in each of the 99 categories, and in
+  # each following level 9 more learners for each category.
 
   sub cut { 42 }
   my $foo = cut();
