@@ -1,3 +1,40 @@
+=head1 NAME - foo bar
+
+Hot stuff.
+
+=head1 SYNOPSIS
+
+See this:
+
+  If all possible cpv numbers possible with 8 digits would be used, the
+  tree would have one root level learner categorizing into 99
+  9categories, 99 learners at the next level each categorizing into 9
+  categories, therefore 9 learnes in each of the 99 categories, and in
+  each following level 9 more learners for each category.
+
+  sub cut { 42 }
+  my $foo = cut();
+  sub affe {
+          do_something_strong($foo, $zomtec, @tiger);
+          print STDERR $foo, "\n";
+  }
+  affe();
+  sub kram {
+          foo($kram);
+  }
+
+ If all possible cpv numbers possible with 8 digits would be used, the
+ tree would have one root level learner categorizing into 99
+ categories, 99 learners at the next level each categorizing into 9
+ categories, therefore 9 learnes in each of the 99 categories, and in
+ each following level 9 more learners for each category.
+
+  def mythical_stuff:
+    hot(:foo, :bar, "baz")
+  end
+
+=cut
+
 =pod 
 
 =head1 NAME
@@ -23,7 +60,7 @@ Categorizing via L<AI::Categorizer|AI::Categorizer>.
 =head1 INTRODUCTION
 
 We use L<AI::Categorizer|AI::Categorizer>. Because AI::Categorizer
-doesn't do hierarchical categorization we added our own hierarchy
+does not do hierarchical categorization we added our own hierarchy
 schema based on the semantics of "cpv numbers".
 
 For introduction to cpv numbers see
@@ -74,119 +111,7 @@ each following level 9 more learners for each category.
 
 That would result in 100.000.000 (100 Millions) categories or learners
 at the last level. In real live there are only about 8000 categories
-used so tha last level has maximal those 8000 categories and each
+used so the last level has maximal those 8000 categories and each
 level above some less. 
 
-=head1 DESCRIPTION
-
-Z<>
-
-=head2 new
-
-DESCRIPTION
-
-Constructor.
-
-Accepts hashref with following arguments.
-
-ARGUMENTS
-
-I<document_set> - Object of L<DocumentSet|DocumentSet>.
-
-I<learner_rootdir> - Directory under which a directory tree
-is built, containing the learn results for each group.
-
-
-I<current_learner>
-
-
-I<max_docs_per_learner>
-
-
-RETURN
-
-__
-
-
-=head2 restore_learner
-
-DESCRIPTION
-
-__
-
-ARGUMENTS
-
-__
-
-RETURN
-
-__
-
-=head2 init
-
-DESCRIPTION
-
-__
-
-ARGUMENTS
-
-__
-
-RETURN
-
-__
-
-=head2 save_current_learner
-
-DESCRIPTION
-
-__
-
-ARGUMENTS
-
-__
-
-RETURN
-
-__
-
-=head2 train
-
-DESCRIPTION
-
-__
-
-ARGUMENTS
-
-__
-
-RETURN
-
-__
-
-=head1 AUTHOR
-
-  Written 2003 by Steffen Schwigon, Thomas Flasche.
-
 =cut
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
