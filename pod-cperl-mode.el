@@ -54,38 +54,45 @@
               (beginning-of-line)
               (looking-at " "))
             (progn
-              (message "--verbatim--")
-              ;;(message info)
+              (setq info "--verbatim--")
               (setq mode 'cperl-mode)
-              ;;(setq start (match-beginning 0))
               (if (re-search-backward "^[^ ]" nil t)
-                  (setq start (line-beginning-position 2)))
-              (if (re-search-forward "^[^ ]" nil t)
-                  (setq end (line-end-position)))))
+                  (progn
+                    (setq start (match-beginning 0))
+                    (message (prin1-to-string start))
+                    )
+                )
+              (if (re-search-forward "^\\([^ ]\\)" nil t)
+                  (progn
+                    (message (prin1-to-string (point)))
+                    (setq end (match-beginning 0))
+                    (message (prin1-to-string end))
+                    )
+                )))
            ;; outside verbatim, in pod
            ((save-excursion
               (beginning-of-line)
               (looking-at "[^ ]"))
             (progn
-              (message "--pod--")
-              ;;(message info)
+              (setq info "--pod--")
               (setq mode 'pod-mode)
-              ;;(setq start (match-beginning 0))
               (if (re-search-backward "^[ ]" nil t)
                   (setq start (line-beginning-position 2)))
               (if (re-search-forward "^[ ]" nil t)
-                  (setq end (line-end-position 0)))))
+                  (setq end (line-end-position)))))
 
            (t
             (progn
-              (message "--default--")
-              ;;(message info)
+              (setq info "++default++")
               (beginning-of-line)
               (if (re-search-forward "^[ ]" nil t)
                   (setq end (point))
                 (setq end (point-max)
                       mode 'cperl-mode))))
            )
+          ;;(message (concat info ": " start ".." end))
+          ;;(message info)
+          ;;(message (concat info " " (prin1-to-string mode) ": " (prin1-to-string start) ".." (prin1-to-string end)))
           (multi-make-list mode start end)))))
 
 ;;;###autoload
