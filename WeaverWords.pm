@@ -20,39 +20,66 @@ sub weaverwords_from_dir {
         dist_root => $dir,
     });
 
-    my $zil_weaver = first { $_->isa('Dist::Zilla::Plugin::PodWeaver') } @{ $zil->plugins };
+    my $zil_weaver = first {
+        $_->isa('Dist::Zilla::Plugin::PodWeaver')
+    } @{ $zil->plugins};
     return unless $zil_weaver;
-    my $weaver = $zil_weaver->weaver;
-    my @weaver_plugins = @{ $weaver->plugins } ;
 
-    print q{'((collectors . };
-    emit_collectors(grep { $_->isa('Pod::Weaver::Section::Collect') } @weaver_plugins);
-    print q{) (transformers . };
-    emit_transformers(grep { $_->isa('Pod::Weaver::Plugin::Transformer') } @weaver_plugins);
-    print qq{))\n};
+    my @weaver_plugins = @{ $zil_weaver->weaver->plugins };
+
+    print SExpGen->new->visit({
+        collectors => [
+            map {
+                +{ $_->command, $_->new_command }
+            } grep {
+                $_->isa('Pod::Weaver::Section::Collect')
+            } @weaver_plugins
+        ],
+        transformers => [
+            map {
+                $_->transformer->isa('Pod::Elemental::Transformer::List')
+                    ? +{ 'List' => $_->transformer->format_name }
+                    : ()
+            } grep {
+                $_->isa('Pod::Weaver::Plugin::Transformer')
+            } @weaver_plugins
+        ],
+    }), "\n";
 }
 
-sub emit_collectors {
-    my @collectors = @_;
-    print q{(};
-    print join q{ } => map {
-        sprintf q{(%s . %s)}, $_->command, $_->new_command;
-    } @collectors;
-    print q{)};
+package SExpGen;
+# perl data -> sexp. only simple values, hash refs, and array refs.
+
+use Moose;
+use List::AllUtils qw(reduce);
+use namespace::autoclean;
+
+extends 'Data::Visitor';
+
+sub visit_value {
+    my ($self, $value) = @_;
+    return qq{(quote $value)};
 }
 
-sub emit_transformers {
-    my @transformers = @_;
-    print q{(};
-    emit_transformer_list(grep { $_->transformer->isa('Pod::Elemental::Transformer::List') } @transformers);
-    print q{)};
-}
+override visit_normal_hash => sub {
+    my ($self) = @_;
+    my $ret = super;
+    return $self->foldr_cons(map {
+        sprintf q{(cons %s %s)}, $_, $ret->{$_}
+    } keys %{ $ret });
+};
 
-sub emit_transformer_list {
-    my @lists = @_;
-    print join q{ } => map {
-        sprintf q{(%s . List)}, $_->transformer->format_name;
-    } @lists;
+override visit_normal_array => sub {
+    my ($self) = @_;
+    return $self->foldr_cons(@{ super() }, q{nil});
+};
+
+sub foldr_cons {
+    my ($self, @list) = @_;
+
+    return join q{ } => reduce {
+        sprintf q{(cons %s %s)}, $b, $a;
+    } reverse @list;
 }
 
 1;
