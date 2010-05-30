@@ -180,6 +180,10 @@
                   (if weaver-config (pod-enable-weaver-features weaver-config))))
             (setq pod-weaver-config-buffer "")))))
 
+(defun pod-add-support-for-weaver ()
+  (let ((project-root (ignore-errors (eproject-maybe-turn-on))))
+    (if project-root (pod-load-weaver-config project-root))))
+
 ;; main
 (defun pod-mode ()
   "Major mode for editing POD files (Plain Old Documentation for Perl)."
@@ -196,6 +200,7 @@
   (setq imenu-generic-expression '((nil "^=head[1234] +\\(.*\\)" 1)))
   (run-hooks 'pod-mode-hook)
   (pod-add-support-for-outline-minor-mode)
+  (pod-add-support-for-weaver)
   )
 
 (provide 'pod-mode)
