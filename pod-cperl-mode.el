@@ -43,7 +43,7 @@
     (let ((mode 'pod-mode)
           (start (point-min))
           (end (point-max))
-          (info ""))
+          (info "none"))
       (save-excursion
         (save-restriction
           (widen)
@@ -55,51 +55,29 @@
               (looking-at " "))
             (progn
               (setq info "--verbatim--")
+              ;;(message info)
               (setq mode 'cperl-mode)
-
               (save-excursion
-                (setq start (or (re-search-backward "^\\([^ ]\\)" nil t) point-min))
-                (message (prin1-to-string start))
-                ;;(next-line)
-                )
-
-              (save-excursion
-                (setq end (or (re-search-forward "^\\([^ ]\\)" nil t) point-max))
-                (message (prin1-to-string end))
-                )
-              ))
-           ;; outside verbatim, in pod
-           ((save-excursion
-              (beginning-of-line)
-              (looking-at "[^ ]"))
-            (progn
-              (setq info "--pod--")
-              (setq mode 'pod-mode)
-
-              (save-excursion
-                (setq start (or (re-search-backward "^\\([ ]\\)" nil t) point-min))
-                (message (prin1-to-string start))
-                ;;(next-line)
-                )
-
-              (save-excursion
-                (setq end (or (re-search-forward "^\\([ ]\\)" nil t) point-max))
-                (message (prin1-to-string end))
-                )
-              ))
+                (setq start (if (re-search-backward "^\\([^ ]\\)" nil t)
+                                (progn (beginning-of-line 2) (point))
+                              (point-min))
+                      end (if (re-search-forward "^\\([^ ]\\)" nil t)
+                              (progn (beginning-of-line) (backward-char) (backward-char) (point))
+                            (point-max))))))
+           ;; outside verbatim, assume pod
            (t
             (progn
-              (setq info "++default++")
-              (beginning-of-line)
-              (if (re-search-forward "^[ ]" nil t)
-                  (setq end (point)
-                        mode 'pod-mode)
-                (setq end (point-max)
-                      mode 'cperl-mode))))
-           )
-          ;;(message (concat info ": " start ".." end))
-          ;;(message info)
-          (message (concat info " " (prin1-to-string mode) ": " (prin1-to-string start) ".." (prin1-to-string end)))
+              (setq info "--pod--")
+              ;;(message info)
+              (setq mode 'pod-mode)
+              (save-excursion
+                (setq start (if (re-search-backward "^\\([ ]\\)" nil t)
+                                (progn (beginning-of-line 2) (point))
+                              (point-min))
+                      end (if (re-search-forward "^\\([ ]\\)" nil t)
+                              (progn (beginning-of-line) (backward-char) (point))
+                            (point-max)))))))
+          ;;(message (concat info " " (prin1-to-string mode) ": " (prin1-to-string start) ".." (prin1-to-string end)))
           (multi-make-list mode start end)))))
 
 ;;;###autoload
