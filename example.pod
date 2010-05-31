@@ -1,6 +1,9 @@
+ # directly start with
+ # some verbatim stuff
+
 =head1 NAME - foo bar
 
-Hot stuff.
+ # Single verbatim line
 
 =head1 SYNOPSIS
 
@@ -12,26 +15,26 @@ See this:
   # categories, therefore 9 learnes in each of the 99 categories, and in
   # each following level 9 more learners for each category.
 
+  # a verbatim block
   sub cut { 42 }
   my $foo = cut();
   sub affe {
           do_something_strong($foo, $zomtec, @tiger);
           print STDERR $foo, "\n";
   }
+
+  # another verbatim block after a single empty line
+  # although that is not the only reason for confusion
   affe();
   sub kram {
           foo($kram);
   }
 
- If all possible cpv numbers possible with 8 digits would be used, the
- tree would have one root level learner categorizing into 99
- categories, 99 learners at the next level each categorizing into 9
- categories, therefore 9 learnes in each of the 99 categories, and in
- each following level 9 more learners for each category.
-
-  def mythical_stuff:
-    hot(:foo, :bar, "baz")
-  end
+If all possible cpv numbers possible with 8 digits would be used, the
+tree would have one root level learner categorizing into 99
+categories, 99 learners at the next level each categorizing into 9
+categories, therefore 9 learnes in each of the 99 categories, and in
+each following level 9 more learners for each category.
 
 =cut
 
@@ -115,3 +118,6 @@ used so the last level has maximal those 8000 categories and each
 level above some less. 
 
 =cut
+
+  # end with some
+  # verbatim lines
