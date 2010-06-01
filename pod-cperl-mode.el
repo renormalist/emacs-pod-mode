@@ -38,6 +38,7 @@
 ;;; Code:
 
 (require 'multi-mode)
+
 (defun pod-cperl-chunk-region (pos)
   "Determine type and limit of current chunk at POS."
     (let ((mode 'pod-mode)
@@ -58,10 +59,10 @@
               ;;(message info)
               (setq mode 'cperl-mode)
               (save-excursion
-                (setq start (if (re-search-backward "^\\([^ ]\\)" nil t)
+                (setq start (if (re-search-backward "^[^ \r\n\t]" nil t)
                                 (progn (beginning-of-line 2) (point))
                               (point-min))
-                      end (if (re-search-forward "^\\([^ ]\\)" nil t)
+                      end (if (re-search-forward "^[^ \r\n\t]" nil t)
                               (progn (beginning-of-line) (backward-char) (backward-char) (point))
                             (point-max))))))
            ;; outside verbatim, assume pod
@@ -71,10 +72,10 @@
               ;;(message info)
               (setq mode 'pod-mode)
               (save-excursion
-                (setq start (if (re-search-backward "^\\([ ]\\)" nil t)
+                (setq start (if (re-search-backward "^[ ]" nil t)
                                 (progn (beginning-of-line 2) (point))
                               (point-min))
-                      end (if (re-search-forward "^\\([ ]\\)" nil t)
+                      end (if (re-search-forward "^[ ]" nil t)
                               (progn (beginning-of-line) (backward-char) (point))
                             (point-max)))))))
           ;;(message (concat info " " (prin1-to-string mode) ": " (prin1-to-string start) ".." (prin1-to-string end)))
