@@ -1,0 +1,25 @@
+{
+   "meta-spec" : {
+      "version" : 2
+   },
+   "generated_by" : "An inappropriate amount of Emacs and Perl",
+   "version" : "1.00",
+   "name" : "pod-mode",
+   "author" : [
+      "Steffen Schwigon <ss5@renormalist.net>",
+      "Florian Ragwitz <rafl@debian.org>"
+   ],
+   "dynamic_config" : "0",
+   "license" : [
+      "perl_5"
+   ],
+   "description" : "Emacs syntax highlighting for POD",
+   "keywords" : [
+      "emacs",
+      "mode",
+      "perl",
+      "pod"
+   ],
+   "abstract" : "Emacs syntax highlighting for POD",
+   "release_status" : "stable"
+}
