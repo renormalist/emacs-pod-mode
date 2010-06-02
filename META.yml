@@ -5,7 +5,7 @@ version: 1.01
 author:
   - Steffen Schwigon <ss5@renormalist.net>
   - Florian Ragwitz <rafl@debian.org>
-license: perl
+license: gpl_2
 distribution_type: script
 resources:
   license: http://dev.perl.org/licenses/
