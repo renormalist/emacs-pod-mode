@@ -1,5 +1,11 @@
 2010-06-02  Steffen Schwigon  <ss5@renormalist.net>
 
+	* v1.01
+
+	* fix meta information
+
+2010-06-02  Steffen Schwigon  <ss5@renormalist.net>
+
 	* v1.0
 
 	* support for Dist::Zilla PodWeaver, by Florian Ragwitz

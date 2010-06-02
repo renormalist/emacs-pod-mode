@@ -2,7 +2,7 @@
 
 ;;; POD is the Plain Old Documentation format of Perl.
 
-;;; Copyright 2003-2009 Steffen Schwigon
+;;; Copyright 2003-2010 Steffen Schwigon
 
 ;;; Author: Steffen Schwigon <ss5@renormalist.net>
 ;;; Version: 1.01
@@ -36,7 +36,7 @@
 ;;;
 ;;; which disapeared from the net and is now hosted at
 ;;;
-;;;   http://renormalist.net/cgi-bin/twiki/view/Renormalist/EmacsLanguageModeCreationTutorial
+;;;   http://renormalist.net/Renormalist/EmacsLanguageModeCreationTutorial
 ;;;
 ;;; Regexes are defined for the following font-lock-faces:
 ;;;
