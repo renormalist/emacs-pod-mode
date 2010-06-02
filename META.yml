@@ -1,9 +1,10 @@
 ---
 name: pod-mode
 abstract: Emacs syntax highlighting for POD
-version: 0.502
+version: 1.00
 author:
   - Steffen Schwigon <ss5@renormalist.net>
+  - Florian Ragwitz <rafl@debian.org>
 license: perl
 distribution_type: script
 resources:
@@ -17,4 +18,4 @@ provides:
   pod-mode:
     file: pod-mode.el
     abstract: Emacs syntax highlighting for POD
-    version: 0.502
+    version: 1.00

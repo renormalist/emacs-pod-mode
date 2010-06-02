@@ -1,12 +1,11 @@
 ;;; pod-mode.el --- Major mode for editing .pod-files
 
-;;; It mainly defines a grammar for syntax highlighting.
 ;;; POD is the Plain Old Documentation format of Perl.
 
 ;;; Copyright 2003-2009 Steffen Schwigon
 
 ;;; Author: Steffen Schwigon <ss5@renormalist.net>
-;;; Version: 0.502
+;;; Version: 1.00
 ;;; Keywords: perl pod
 ;;; X-URL: http://search.cpan.org/~schwigon/pod-mode/
 

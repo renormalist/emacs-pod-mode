@@ -1,3 +1,13 @@
+2010-06-02  Steffen Schwigon  <ss5@renormalist.net>
+
+	* v1.0
+
+	* support for Dist::Zilla PodWeaver, by Florian Ragwitz
+	- Automatically load weaver keywords for files that
+	  are part of a project
+
+	* big version bump as Demonstration der Stärke :-)
+
 2009-02-15  Steffen Schwigon  <ss5@renormalist.net>
 
 	* v0.502
