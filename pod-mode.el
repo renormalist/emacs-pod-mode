@@ -5,8 +5,8 @@
 ;;; Copyright 2003-2009 Steffen Schwigon
 
 ;;; Author: Steffen Schwigon <ss5@renormalist.net>
-;;; Version: 1.00
-;;; Keywords: perl pod
+;;; Version: 1.01
+;;; Keywords: emacs mode perl pod
 ;;; X-URL: http://search.cpan.org/~schwigon/pod-mode/
 
 ;;; This program is free software; you can redistribute it and/or modify
