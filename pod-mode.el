@@ -145,6 +145,46 @@
                       ))))
   )
 
+(defun pod-enable-weaver-collector-keywords (collectors)
+  (let* ((keyword-list (mapcar (lambda (collector)
+                                 (symbol-name (getf collector 'command)))
+                               collectors))
+         (keyword-re (concat "^=" (regexp-opt keyword-list t))))
+    (setf pod-font-lock-keywords
+          (append pod-font-lock-keywords
+                  `((,keyword-re 0 font-lock-keyword-face))
+                  `((,(concat keyword-re "\\(.*\\)") 2 font-lock-comment-face))))
+    (setq font-lock-mode-major-mode nil)
+    (font-lock-fontify-buffer)))
+
+(defun pod-enable-weaver-features (weaver-config)
+  (pod-enable-weaver-collector-keywords (getf weaver-config 'collectors))
+  (message "Pod::Weaver keywords loaded."))
+
+(defvar pod-weaver-config-buffer "")
+
+(defun pod-load-weaver-config (dir)
+  "Load additional pod keywords from a projects dist.ini/weaver.ini"
+  (let* ((proc (start-process-shell-command
+                (concat "weaverconf-" (buffer-name (current-buffer)))
+                nil (format "cd %s; dzil weaverconf -f lisp" dir))))
+    (make-local-variable 'pod-weaver-config-buffer)
+    (set-process-filter
+     proc (lambda (proc str)
+            (setq pod-weaver-config-buffer (concat pod-weaver-config-buffer str))))
+    (set-process-sentinel
+     proc (lambda (proc event)
+            (if (string-equal event "finished\n")
+                (let ((weaver-config
+                       (ignore-errors
+                         (eval (car (read-from-string pod-weaver-config-buffer))))))
+                  (if weaver-config (pod-enable-weaver-features weaver-config))))
+            (setq pod-weaver-config-buffer "")))))
+
+(defun pod-add-support-for-weaver ()
+  (let ((project-root (ignore-errors (eproject-maybe-turn-on))))
+    (if project-root (pod-load-weaver-config project-root))))
+
 ;; main
 (defun pod-mode ()
   "Major mode for editing POD files (Plain Old Documentation for Perl)."
@@ -161,7 +201,7 @@
   (setq imenu-generic-expression '((nil "^=head[1234] +\\(.*\\)" 1)))
   (run-hooks 'pod-mode-hook)
   (pod-add-support-for-outline-minor-mode)
-  ;; (font-lock-fontify-buffer)
+  (pod-add-support-for-weaver)
   )
 
 (provide 'pod-mode)
