@@ -5,7 +5,7 @@
 ;;; Copyright 2003-2010 Steffen Schwigon
 
 ;;; Author: Steffen Schwigon <ss5@renormalist.net>
-;;; Version: 1.01
+;;;
 ;;; Keywords: emacs mode perl pod
 ;;; X-URL: http://search.cpan.org/~schwigon/pod-mode/
 
@@ -71,6 +71,10 @@
 
 ;; default variables
 (defvar pod-mode-hook nil)
+
+;;; Version: 1.01
+(defvar pod-version "1.01"
+  "Version of POD mode")
 
 ;; keymap
 (defvar pod-mode-map nil "Keymap for POD major mode.")
