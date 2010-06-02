@@ -23,7 +23,7 @@
    ],
    "dynamic_config" : "0",
    "license" : [
-      "perl_5"
+      "gpl_2"
    ],
    "description" : "Emacs syntax highlighting for POD",
    "keywords" : [

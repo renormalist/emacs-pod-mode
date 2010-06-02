@@ -16,7 +16,7 @@ my $distmeta = {
                                    'Florian Ragwitz <rafl@debian.org>',
                                   ],
                 keywords       => [ "emacs", "mode", "perl", "pod" ],
-                license        => [ "perl_5" ],
+                license        => [ "gpl_2" ],
                 resources      => {
                                    bugtracker => {
                                                   mailto => 'bug-pod-mode@rt.cpan.org',
