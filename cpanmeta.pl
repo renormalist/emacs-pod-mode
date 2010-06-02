@@ -1,6 +1,9 @@
+use strict;
+use warnings;
+
 use CPAN::Meta;
 
-my $VERSION = `grep '^;;; Version:' pod-mode.el | cut -d: -f2 | sed 's/ //g'`;
+my $VERSION = `egrep '^;+ Version:' pod-mode.el | cut -d: -f2 | sed 's/ //g'`;
 chomp $VERSION;
 
 my $distmeta = {

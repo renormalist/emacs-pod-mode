@@ -1,4 +1,4 @@
-VERSION = `grep '^;;; Version:' pod-mode.el | cut -d: -f2 | sed 's/ //g'`
+VERSION = `egrep '^;+ Version:' pod-mode.el | cut -d: -f2 | sed 's/ //g'`
 DISTNAME = pod-mode-$(VERSION)
 
 all:
