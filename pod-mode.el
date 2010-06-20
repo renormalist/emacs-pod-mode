@@ -69,12 +69,104 @@
 
 ;;; Code:
 
+(defgroup pod-mode nil
+  "Mode for editing POD files"
+  :group 'faces)
+
+(defgroup pod-mode-faces nil
+  "Faces for highlighting POD constructs"
+  :prefix "pod-mode-"
+  :group 'pod-mode)
+
+(defface pod-mode-command-face
+  '((((class grayscale) (background light)) (:foreground "LightGray" :weight bold))
+    (((class grayscale) (background dark)) (:foreground "DimGray" :weight bold))
+    (((class color) (min-colors 88) (background light)) (:foreground "Purple"))
+    (((class color) (min-colors 88) (background dark)) (:foreground "Cyan1"))
+    (((class color) (min-colors 16) (background light)) (:foreground "Purple"))
+    (((class color) (min-colors 16) (background dark)) (:foreground "Cyan"))
+    (((class color) (min-colors 8)) (:foreground "cyan" :weight bold))
+    (t (:weight bold)))
+  "Face used to highlight POD commands"
+  :group 'pod-mode-faces)
+
+(defface pod-mode-command-text-face
+  '((((class grayscale) (background light))
+     (:foreground "DimGray" :weight bold :slant italic))
+    (((class grayscale) (background dark))
+     (:foreground "LightGray" :weight bold :slant italic))
+    (((class color) (min-colors 88) (background light))
+     (:foreground "Firebrick"))
+    (((class color) (min-colors 88) (background dark))
+     (:foreground "chocolate1"))
+    (((class color) (min-colors 16) (background light))
+     (:foreground "red"))
+    (((class color) (min-colors 16) (background dark))
+     (:foreground "red1"))
+    (((class color) (min-colors 8) (background light))
+     (:foreground "red"))
+    (((class color) (min-colors 8) (background dark))
+     )
+    (t (:weight bold :slant italic)))
+  "Face used to highlight text after POD commands"
+  :group 'pod-mode-faces)
+
+(defface pod-mode-verbatim-face
+  '((((class grayscale) (background light)) (:foreground "Gray90" :weight bold))
+    (((class grayscale) (background dark)) (:foreground "DimGray" :weight bold))
+    (((class color) (min-colors 88) (background light)) (:foreground "ForestGreen"))
+    (((class color) (min-colors 88) (background dark)) (:foreground "PaleGreen"))
+    (((class color) (min-colors 16) (background light)) (:foreground "ForestGreen"))
+    (((class color) (min-colors 16) (background dark)) (:foreground "PaleGreen"))
+    (((class color) (min-colors 8)) (:foreground "green"))
+    (t (:weight bold :underline t)))
+  "Face used to highlight verbatim paragraphs in POD"
+  :group 'pod-mode-faces)
+
+(defface pod-mode-formatting-code-face
+  '((((class grayscale) (background light))
+     (:foreground "LightGray" :weight bold :underline t))
+    (((class grayscale) (background dark))
+     (:foreground "Gray50" :weight bold :underline t))
+    (((class color) (min-colors 88) (background light)) (:foreground "dark cyan"))
+    (((class color) (min-colors 88) (background dark)) (:foreground "Aquamarine"))
+    (((class color) (min-colors 16) (background light)) (:foreground "CadetBlue"))
+    (((class color) (min-colors 16) (background dark)) (:foreground "Aquamarine"))
+    (((class color) (min-colors 8)) (:foreground "magenta"))
+    (t (:weight bold :underline t)))
+  "Face used to highlight formatting codes in POD"
+  :group 'pod-mode-faces)
+
+(defface pod-mode-alternative-formatting-code-face
+  '((((class color) (min-colors 88) (background light)) (:foreground "Blue1"))
+    (((class color) (min-colors 88) (background dark)) (:foreground "LightSkyBlue"))
+    (((class color) (min-colors 16) (background light)) (:foreground "Blue"))
+    (((class color) (min-colors 16) (background dark)) (:foreground "LightSkyBlue"))
+    (((class color) (min-colors 8)) (:foreground "blue" :weight bold))
+    (t (:inverse-video t :weight bold)))
+  "Alternative face used to highlight formatting codes in POD.
+This is used for E<> escapes and for the link target in L<>
+escapes."
+  :group 'pod-mode-faces)
+
+(defface pod-mode-string-face
+  '((((class grayscale) (background light)) (:foreground "DimGray" :slant italic))
+    (((class grayscale) (background dark)) (:foreground "LightGray" :slant italic))
+    (((class color) (min-colors 88) (background light)) (:foreground "VioletRed4"))
+    (((class color) (min-colors 88) (background dark)) (:foreground "LightSalmon"))
+    (((class color) (min-colors 16) (background light)) (:foreground "RosyBrown"))
+    (((class color) (min-colors 16) (background dark)) (:foreground "LightSalmon"))
+    (((class color) (min-colors 8)) (:foreground "green"))
+    (t (:slant italic)))
+  "Face used to highlight quoted strings in POD"
+  :group 'pod-mode-faces)
+
 ;; default variables
 (defvar pod-mode-hook nil)
 
 ;;; Version: 1.01
 (defvar pod-version "1.01"
-  "Version of POD mode")
+  "Version of POD mode.")
 
 ;; keymap
 (defvar pod-mode-map nil "Keymap for POD major mode.")
@@ -86,46 +178,47 @@
 ;; syntax highlighting: standard keywords
 (defconst pod-font-lock-keywords-1
   '(
-    ("^=\\(head[1234]\\|item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\|encoding\\)" 0 font-lock-keyword-face)
-    ("^[ \t]+\\(.*\\)$" 1 font-lock-type-face)
+    ("^=\\(head[1234]\\|item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\|encoding\\)" 0 'pod-mode-command-face)
+    ("^[ \t]+\\(.*\\)$" 1 'pod-mode-verbatim-face)
     )
   "Minimal highlighting expressions for POD mode.")
 
 ;; syntax highlighting: additional keywords
 (defconst pod-font-lock-keywords-2
   (append pod-font-lock-keywords-1
-	  '(
-	    ("^=\\(head[1234]\\|item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\)\\(.*\\)" 2 font-lock-comment-face)
-	    ))
+          '(
+            ("^=\\(head[1234]\\|item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\)\\(.*\\)" 2 'pod-mode-command-text-face)
+            ))
   "Additional Keywords to highlight in POD mode.")
 
 ;; syntax highlighting: even more keywords
 (defconst pod-font-lock-keywords-3
   (append pod-font-lock-keywords-2
-	  '(
-	    ("[IBCFXZS]<\\([^>]*\\)>" 1 font-lock-reference-face)
-	    ("L<\\(\\([^|>]*\\)|\\)\\([^>]+\\)>"
-	     (2 font-lock-reference-face)
-	     (3 font-lock-function-name-face))
-	    ("L<\\([^|>]+\\)>" 1 font-lock-function-name-face)
-	    ("E<\\([^>]*\\)>" 1 font-lock-function-name-face)
-	    ("\"\\([^\"]+\\)\"" 0 font-lock-string-face)
-	    ))
+          '(
+            ("[IBCFXZS]<\\([^>]*\\)>" 1 'pod-mode-formatting-code-face)
+            ("L<\\(\\([^|>]*\\)|\\)\\([^>]+\\)>"
+             (2 'pod-mode-formatting-code-face)
+             (3 'pod-mode-alternative-formatting-code-face))
+            ("L<\\([^|>]+\\)>" 1 'pod-mode-alternative-formatting-code-face)
+            ("E<\\([^>]*\\)>" 1 'pod-mode-alternative-formatting-code-face)
+            ("\"\\([^\"]+\\)\"" 0 'pod-mode-string-face)
+            ))
   "Balls-out highlighting in POD mode.")
 
 ;; default level of highlight to maximum
 (defvar pod-font-lock-keywords pod-font-lock-keywords-3
-  "Default highlighting expressions for POD mode")
+  "Default highlighting expressions for POD mode.")
 
 ;; no special indenting, just pure text mode
 (defun pod-indent-line ()
-  "Indent current line as POD code. Does nothing yet."
+  "Indent current line as POD code.
+Does nothing yet."
   (interactive)
   )
 
 ;; no special syntax table
 (defvar pod-mode-syntax-table nil
-  "Syntax table for pod-mode.")
+  "Syntax table for `pod-mode'.")
 
 ;; create and activate syntax table
 (defun pod-create-syntax-table ()
@@ -136,7 +229,7 @@
     ))
 
 (defun pod-add-support-for-outline-minor-mode ()
-  "Provides additional menus from =head lines in outline-minor-mode"
+  "Provides additional menus from =head lines in `outline-minor-mode'."
   (make-local-variable 'outline-regexp)
   (setq outline-regexp "=head[1234] ")
   (make-local-variable 'outline-level)
@@ -154,8 +247,8 @@
          (keyword-re (concat "^=" (regexp-opt keyword-list t))))
     (setf pod-font-lock-keywords
           (append pod-font-lock-keywords
-                  `((,keyword-re 0 font-lock-keyword-face))
-                  `((,(concat keyword-re "\\(.*\\)") 2 font-lock-comment-face))))
+                  `((,keyword-re 0 'pod-mode-command-face))
+                  `((,(concat keyword-re "\\(.*\\)") 2 'pod-mode-command-text-face))))
     (setq font-lock-mode-major-mode nil)
     (font-lock-fontify-buffer)))
 
@@ -166,7 +259,7 @@
 (defvar pod-weaver-config-buffer "")
 
 (defun pod-load-weaver-config (dir)
-  "Load additional pod keywords from a projects dist.ini/weaver.ini"
+  "Load additional pod keywords from dist.ini/weaver.ini in DIR."
   (let* ((proc (start-process-shell-command
                 (concat "weaverconf-" (buffer-name (current-buffer)))
                 nil (format "cd %s; dzil weaverconf -f lisp" dir))))
