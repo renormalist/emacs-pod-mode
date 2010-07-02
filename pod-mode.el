@@ -38,15 +38,6 @@
 ;;;
 ;;;   http://renormalist.net/Renormalist/EmacsLanguageModeCreationTutorial
 ;;;
-;;; Regexes are defined for the following font-lock-faces:
-;;;
-;;;   font-lock-keyword-face
-;;;   font-lock-type-face
-;;;   font-lock-comment-face
-;;;   font-lock-reference-face
-;;;   font-lock-doc-string-face
-;;;   font-lock-function-name-face
-;;;
 
 ;;; Usage:
 
@@ -69,6 +60,8 @@
 
 ;;; Code:
 
+(require 'cl)
+
 (defgroup pod-mode nil
   "Mode for editing POD files"
   :group 'faces)
@@ -88,6 +81,11 @@
     (((class color) (min-colors 8)) (:foreground "cyan" :weight bold))
     (t (:weight bold)))
   "Face used to highlight POD commands"
+  :group 'pod-mode-faces)
+
+(defface pod-mode-head-face
+  '((t (:inherit pod-mode-command-face)))
+  "Face used to highlight =head commands"
   :group 'pod-mode-faces)
 
 (defface pod-mode-command-text-face
@@ -176,19 +174,37 @@ escapes."
     (setq pod-mode-map map)))
 
 ;; syntax highlighting: standard keywords
-(defconst pod-font-lock-keywords-1
-  '(
-    ("^=\\(head[1234]\\|item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\|encoding\\)" 0 'pod-mode-command-face)
-    ("^[ \t]+\\(.*\\)$" 1 'pod-mode-verbatim-face)
-    )
-  "Minimal highlighting expressions for POD mode.")
+(let* ((head-sizes '(1.9 1.7 1.5 1.3)) ;; FIXME: completely made up
+       (heads (loop for i from 1 to (length head-sizes) collect
+                    (cons i (nth (- i 1) head-sizes)))))
+  (defconst pod-font-lock-keywords-1
+    (append
+     (loop for (n . s) in heads collect
+           (let ((head-face-name (intern (format "pod-mode-head%d-face" n)))
+                 (text-face-name (intern (format "pod-mode-head%d-text-face" n))))
+             (eval `(defface ,head-face-name
+                      '((t (:inherit pod-mode-head-face :height ,s)))
+                      ,(format "Face used to highlight head%d commands" n)
+                      :group 'pod-mode-faces))
+             (eval `(defface ,text-face-name
+                      '((t (:inherit pod-mode-command-text-face :height ,s)))
+                      ,(format "Face used to hightlight text in head%d commands" n)
+                      :group 'pod-mode-faces))
+             `(,(format "^\\(=head%d\\)\\(.*\\)" n)
+               (1 (quote ,head-face-name))
+               (2 (quote ,text-face-name)))))
+     `((,(concat "^\\(="
+                 (regexp-opt '("item" "over" "back" "cut" "pod"
+                               "for" "begin" "end" "encoding"))
+                 "\\)\\(.*\\)")
+        (1 'pod-mode-command-face)
+        (2 'pod-mode-command-text-face))
+       ("^[ \t]+\\(.*\\)$" 1 'pod-mode-verbatim-face)))
+    "Minimal highlighting expressions for POD mode."))
 
 ;; syntax highlighting: additional keywords
 (defconst pod-font-lock-keywords-2
-  (append pod-font-lock-keywords-1
-          '(
-            ("^=\\(head[1234]\\|item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\)\\(.*\\)" 2 'pod-mode-command-text-face)
-            ))
+  (append pod-font-lock-keywords-1 '())
   "Additional Keywords to highlight in POD mode.")
 
 ;; syntax highlighting: even more keywords
@@ -246,6 +262,10 @@ Does nothing yet."
                                collectors))
          (keyword-re (concat "^=" (regexp-opt keyword-list t))))
     (setf pod-font-lock-keywords
+          ;; TODO: a weaver keyword is often equivalent to an existing
+          ;; pod command, and the weaver config we get tells us
+          ;; which. We should use the appropriate face for them, if we
+          ;; got any, like for =head*
           (append pod-font-lock-keywords
                   `((,keyword-re 0 'pod-mode-command-face))
                   `((,(concat keyword-re "\\(.*\\)") 2 'pod-mode-command-text-face))))
