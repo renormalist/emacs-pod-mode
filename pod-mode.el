@@ -199,10 +199,10 @@ escapes."
                (2 (quote ,text-face-name)))))
      `((,(concat "^\\(="
                  (regexp-opt '("item" "over" "back" "cut" "pod"
-                               "for" "begin" "end" "encoding") t)
+                               "for" "begin" "end" "encoding"))
                  "\\)\\(.*\\)")
         (1 'pod-mode-command-face)
-        (3 'pod-mode-command-text-face))
+        (2 'pod-mode-command-text-face))
        ("^[ \t]+\\(.*\\)$" 1 'pod-mode-verbatim-face)))
     "Minimal highlighting expressions for POD mode."))
 
