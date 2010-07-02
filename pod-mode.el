@@ -109,25 +109,6 @@
   "Face used to highlight text after POD commands"
   :group 'pod-mode-faces)
 
-(let ((head-sizes '(1.9 1.7 1.5 1.3)) ;; FIXME: completely made up
-      (heads))
-  (let ((i 0))
-    (setq heads (mapcar (lambda (s)
-                          (setq i (+ i 1))
-                          (cons i s))
-                        head-sizes)))
-  (loop for (n . s) in heads do
-        ;; TODO: figure out what inherit actually means. does it imply
-        ;; changing properties when the parent face is changed?
-        (eval `(defface ,(intern (format "pod-mode-head%d-face" n))
-                 '((t (:inherit pod-mode-head-face :height ,s)))
-                 ,(format "Face used to highlight head%d commands" n)
-                 :group 'pod-mode-faces))
-        (eval `(defface ,(intern (format "pod-mode-head%d-text-face" n))
-                 '((t (:inherit pod-mode-command-text-face :height ,s)))
-                 ,(format "Face used to hightlight text in head%d commands" n)
-                 :group 'pod-mode-faces))))
-
 (defface pod-mode-verbatim-face
   '((((class grayscale) (background light)) (:foreground "Gray90" :weight bold))
     (((class grayscale) (background dark)) (:foreground "DimGray" :weight bold))
@@ -193,28 +174,38 @@ escapes."
     (setq pod-mode-map map)))
 
 ;; syntax highlighting: standard keywords
-(defconst pod-font-lock-keywords-1
-  (let ((keywords
-         (loop for l from 1 to 4
-               collect
-               ;; FIXME: DRY on (intern (format with face generation
-               `(,(format "^\\(=head%d\\)\\(.*\\)" l)
-                 (1 (quote ,(intern (format "pod-mode-head%d-face" l))))
-                 (2 (quote ,(intern (format "pod-mode-head%d-text-face" l))))))))
+(let ((head-sizes '(1.9 1.7 1.5 1.3)) ;; FIXME: completely made up
+      (heads))
+  (let ((i 0))
+    (setq heads (mapcar (lambda (s)
+                          (setq i (+ i 1))
+                          (cons i s))
+                        head-sizes)))
+  (defconst pod-font-lock-keywords-1
     (append
-     keywords
-     '(
-       ("^\\(=\\(item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\|encoding\\)\\)\\(.*\\)"
+     (loop for (n . s) in heads collect
+           (let ((head-face-name (intern (format "pod-mode-head%d-face" n)))
+                 (text-face-name (intern (format "pod-mode-head%d-text-face" n))))
+             (eval `(defface ,head-face-name
+                      '((t (:inherit pod-mode-head-face :height ,s)))
+                      ,(format "Face used to highlight head%d commands" n)
+                      :group 'pod-mode-faces))
+             (eval `(defface ,text-face-name
+                      '((t (:inherit pod-mode-command-text-face :height ,s)))
+                      ,(format "Face used to hightlight text in head%d commands" n)
+                      :group 'pod-mode-faces))
+             `(,(format "^\\(=head%d\\)\\(.*\\)" n)
+               (1 (quote ,head-face-name))
+               (2 (quote ,text-face-name)))))
+     '(("^\\(=\\(item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\|encoding\\)\\)\\(.*\\)"
         (1 'pod-mode-command-face)
         (3 'pod-mode-command-text-face))
-       ("^[ \t]+\\(.*\\)$" 1 'pod-mode-verbatim-face)
-       )))
-  "Minimal highlighting expressions for POD mode.")
+       ("^[ \t]+\\(.*\\)$" 1 'pod-mode-verbatim-face)))
+    "Minimal highlighting expressions for POD mode."))
 
 ;; syntax highlighting: additional keywords
 (defconst pod-font-lock-keywords-2
-  (append pod-font-lock-keywords-1
-          '())
+  (append pod-font-lock-keywords-1 '())
   "Additional Keywords to highlight in POD mode.")
 
 ;; syntax highlighting: even more keywords
