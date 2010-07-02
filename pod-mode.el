@@ -174,7 +174,7 @@ escapes."
     (setq pod-mode-map map)))
 
 ;; syntax highlighting: standard keywords
-(let* ((head-sizes '(1.9 1.7 1.5 1.3)) ;; FIXME: completely made up
+(let* ((head-sizes '(1.9 1.7 1.5 1.3))
        (heads (loop for i from 1 to (length head-sizes) collect
                     (cons i (nth (- i 1) head-sizes)))))
   (defconst pod-font-lock-keywords-1
