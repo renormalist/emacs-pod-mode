@@ -197,7 +197,10 @@ escapes."
              `(,(format "^\\(=head%d\\)\\(.*\\)" n)
                (1 (quote ,head-face-name))
                (2 (quote ,text-face-name)))))
-     '(("^\\(=\\(item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\|encoding\\)\\)\\(.*\\)"
+     `((,(concat "^\\(="
+                 (regexp-opt '("item" "over" "back" "cut" "pod"
+                               "for" "begin" "end" "encoding") t)
+                 "\\)\\(.*\\)")
         (1 'pod-mode-command-face)
         (3 'pod-mode-command-text-face))
        ("^[ \t]+\\(.*\\)$" 1 'pod-mode-verbatim-face)))
