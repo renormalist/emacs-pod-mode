@@ -198,15 +198,15 @@ escapes."
          (loop for l from 1 to 4
                collect
                ;; FIXME: DRY on (intern (format with face generation
-               `(,(format "^=\\(head%d\\)\\(.*\\)" l)
+               `(,(format "^\\(=head%d\\)\\(.*\\)" l)
                  (1 (quote ,(intern (format "pod-mode-head%d-face" l))))
                  (2 (quote ,(intern (format "pod-mode-head%d-text-face" l))))))))
     (append
      keywords
      '(
-       ("^=\\(item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\|encoding\\)\\(.*\\)"
+       ("^\\(=\\(item\\|over\\|back\\|cut\\|pod\\|for\\|begin\\|end\\|encoding\\)\\)\\(.*\\)"
         (1 'pod-mode-command-face)
-        (2 'pod-mode-command-text-face))
+        (3 'pod-mode-command-text-face))
        ("^[ \t]+\\(.*\\)$" 1 'pod-mode-verbatim-face)
        )))
   "Minimal highlighting expressions for POD mode.")
