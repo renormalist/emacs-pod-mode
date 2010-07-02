@@ -174,13 +174,9 @@ escapes."
     (setq pod-mode-map map)))
 
 ;; syntax highlighting: standard keywords
-(let ((head-sizes '(1.9 1.7 1.5 1.3)) ;; FIXME: completely made up
-      (heads))
-  (let ((i 0))
-    (setq heads (mapcar (lambda (s)
-                          (setq i (+ i 1))
-                          (cons i s))
-                        head-sizes)))
+(let* ((head-sizes '(1.9 1.7 1.5 1.3)) ;; FIXME: completely made up
+       (heads (loop for i from 1 to (length head-sizes) collect
+                    (cons i (nth (- i 1) head-sizes)))))
   (defconst pod-font-lock-keywords-1
     (append
      (loop for (n . s) in heads collect
