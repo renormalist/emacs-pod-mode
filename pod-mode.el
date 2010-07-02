@@ -260,15 +260,16 @@ Does nothing yet."
   (let* ((keyword-list (mapcar (lambda (collector)
                                  (symbol-name (getf collector 'command)))
                                collectors))
-         (keyword-re (concat "^=" (regexp-opt keyword-list t))))
+         (keyword-re (concat "^\\(=" (regexp-opt keyword-list) "\\)\\(.*\\)")))
     (setf pod-font-lock-keywords
           ;; TODO: a weaver keyword is often equivalent to an existing
           ;; pod command, and the weaver config we get tells us
           ;; which. We should use the appropriate face for them, if we
           ;; got any, like for =head*
           (append pod-font-lock-keywords
-                  `((,keyword-re 0 'pod-mode-command-face))
-                  `((,(concat keyword-re "\\(.*\\)") 2 'pod-mode-command-text-face))))
+                  `((,keyword-re
+                     (1 'pod-mode-command-face)
+                     (2 'pod-mode-command-text-face)))))
     (setq font-lock-mode-major-mode nil)
     (font-lock-fontify-buffer)))
 
