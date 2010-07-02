@@ -266,6 +266,10 @@ Does nothing yet."
                                collectors))
          (keyword-re (concat "^=" (regexp-opt keyword-list t))))
     (setf pod-font-lock-keywords
+          ;; TODO: a weaver keyword is often equivalent to an existing
+          ;; pod command, and the weaver config we get tells us
+          ;; which. We should use the appropriate face for them, if we
+          ;; got any, like for =head*
           (append pod-font-lock-keywords
                   `((,keyword-re 0 'pod-mode-command-face))
                   `((,(concat keyword-re "\\(.*\\)") 2 'pod-mode-command-text-face))))
