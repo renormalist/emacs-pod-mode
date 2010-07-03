@@ -24,9 +24,10 @@
 ;;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
 ;;; MA 02110-1301, USA.
 
-;;; Tested on i386-linux with XEmacs 21.4.
-;;; Tested on i386-linux with GNU Emacs 21.2.1.
-;;; Tested on i386-windows-2k with XEmacs 21.4.
+;;; This code is supposed to work on all platforms on both GNU Emacs
+;;; and XEmacs at least as of version 21.2.1 and 21.4,
+;;; respectively. Please speak up if it doesn't on your platform or
+;;; recent-ish version of an Emacs of your choice
 
 ;;; Commentary:
 
