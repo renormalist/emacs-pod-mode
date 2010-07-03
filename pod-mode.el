@@ -166,13 +166,6 @@ escapes."
 (defvar pod-version "1.01"
   "Version of POD mode.")
 
-;; keymap
-(defvar pod-mode-map nil "Keymap for POD major mode.")
-(if pod-mode-map nil
-  (let ((map (make-sparse-keymap)))
-    ;; insert (define-key map ...) stuff here
-    (setq pod-mode-map map)))
-
 ;; syntax highlighting: standard keywords
 (let* ((head-sizes '(1.9 1.7 1.5 1.3))
        (heads (loop for i from 1 to (length head-sizes) collect
@@ -231,6 +224,92 @@ escapes."
 Does nothing yet."
   (interactive)
   )
+
+(defun pod-linkable-sections-for-buffer (buffer)
+  (with-current-buffer buffer
+    (save-excursion
+      (save-match-data
+        (goto-char (point-min))
+        (loop while (re-search-forward "^=head[1234]\s+\\(.*\\)$" nil t) collect
+              (match-string-no-properties 1))))))
+
+(defun pod-linkable-sections-for-module (module)
+  (with-current-buffer (get-buffer-create (concat "*POD " module "*"))
+    (unwind-protect
+        (progn
+          (kill-all-local-variables)
+          (erase-buffer)
+          (text-mode)
+          (let ((default-directory "/"))
+            (call-process "perldoc" nil (current-buffer) nil "-T" "-u" module)
+            (goto-char (point-min))
+            (when (and (> (count-lines (point-min) (point-max)) 1)
+                       (not (re-search-forward "No documentation found for .*" nil t)))
+              (pod-linkable-sections-for-buffer (current-buffer)))))
+      (kill-buffer (current-buffer)))))
+
+(defun pod-linkable-sections (&optional module)
+  (if module
+      (pod-linkable-sections-for-module module)
+    (pod-linkable-sections-for-buffer (current-buffer))))
+
+(defun pod-linkable-modules (&optional re-cache)
+  (when (ignore-errors (require 'perldoc))
+    (when (or re-cache (not perldoc-modules-alist))
+      (message "Building completion list of all perl modules..."))
+    (perldoc-modules-alist re-cache)))
+
+(defun pod-link (link &optional text)
+  (insert (concat "L<"
+                  (when (and (stringp text)
+                             (string-match-p "[^\s]" text))
+                    (concat text "|"))
+                  link
+                  ">")))
+
+(defun pod-link-uri (uri &optional text)
+  (interactive
+   (list (read-string "URI: ")
+         (read-string "Text: ")))
+  (pod-link uri text))
+
+(defun pod-link-section (section &optional text)
+  (interactive
+   (list (completing-read "Section: " (pod-linkable-sections) nil nil)
+         (read-string "Text: ")))
+  (pod-link-module-section "" section text))
+
+(defun pod-link-module (module &optional text)
+  (interactive
+   (list (completing-read "Module: " (pod-linkable-modules current-prefix-arg) nil nil)
+         (read-string "Text: ")))
+  (pod-link module text))
+
+(defun pod-link-module-section (module section &optional text)
+  (interactive
+   (let ((module (completing-read "Module: "
+                                  (pod-linkable-modules current-prefix-arg)
+                                  nil nil)))
+   (list module
+         (completing-read "Section: " (pod-linkable-sections module) nil nil)
+         (read-string "Text: "))))
+  (pod-link
+   (concat module
+           "/"
+           (if (string-match-p "\s" section)
+               (concat "\"" section "\"")
+             section))
+   text))
+
+;; keymap
+(defvar pod-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "C-c C-l u") 'pod-link-uri)
+    (define-key map (kbd "C-c C-l s") 'pod-link-section)
+    (define-key map (kbd "C-c C-l m") 'pod-link-module)
+    (define-key map (kbd "C-c C-l M") 'pod-link-module-section)
+    map)
+  "Keymap for POD major mode.")
 
 ;; no special syntax table
 (defvar pod-mode-syntax-table nil
