@@ -464,6 +464,7 @@ escapes."
   (let ((project-root (ignore-errors (eproject-maybe-turn-on))))
     (if project-root (pod-load-weaver-config project-root))))
 
+;;;###autoload
 (defun pod-mode ()
   "Major mode for editing POD files (Plain Old Documentation for Perl)."
   (interactive)
