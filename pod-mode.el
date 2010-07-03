@@ -369,7 +369,7 @@ escapes."
                                pod-weaver-section-keywords))
                  (string-to-int (buffer-substring
                                  (+ (point) 5)
-                                 (+ (point) 6)))))))))
+                                 (+ (point) 6))))))))))
 
 (defun pod-enable-weaver-collector-keywords (collectors)
   (let ((collectors-by-replacement))
@@ -426,7 +426,7 @@ escapes."
                         '(2 'pod-mode-command-text-face))))))
                 collectors-by-replacement))))
     (setq font-lock-mode-major-mode nil)
-    (font-lock-fontify-buffer))))
+    (font-lock-fontify-buffer)))
 
 (defun pod-enable-weaver-features (buffer weaver-config)
   (with-current-buffer buffer
