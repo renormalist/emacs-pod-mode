@@ -140,6 +140,11 @@
   "Face used to highlight I<> formatting codes in POD"
   :group 'pod-mode-faces)
 
+(defface pod-mode-formatting-code-b-face
+  '((t (:inherit pod-mode-formatting-code-face :weight bold)))
+  "Face used to highlight B<> formatting codes in POD"
+  :group 'pod-mode-faces)
+
 (defface pod-mode-alternative-formatting-code-face
   '((((class color) (min-colors 88) (background light)) (:foreground "Blue1"))
     (((class color) (min-colors 88) (background dark)) (:foreground "LightSkyBlue"))
@@ -209,8 +214,9 @@ escapes."
 (defconst pod-font-lock-keywords-3
   (append pod-font-lock-keywords-2
           '(
-            ("[BCFXZS]<\\([^>]*\\)>" 1 'pod-mode-formatting-code-face)
+            ("[CFXZS]<\\([^>]*\\)>" 1 'pod-mode-formatting-code-face)
             ("I<\\([^>]*\\)>" 1 'pod-mode-formatting-code-i-face)
+            ("B<\\([^>]*\\)>" 1 'pod-mode-formatting-code-b-face)
             ("L<\\(\\([^|>]*\\)|\\)\\([^>]+\\)>"
              (2 'pod-mode-formatting-code-face)
              (3 'pod-mode-alternative-formatting-code-face))
