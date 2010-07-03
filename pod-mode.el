@@ -238,8 +238,7 @@ Does nothing yet."
 
 ;; create and activate syntax table
 (defun pod-create-syntax-table ()
-  (if pod-mode-syntax-table
-      ()
+  (when (not pod-mode-syntax-table)
     (setq pod-mode-syntax-table (make-syntax-table))
     (set-syntax-table pod-mode-syntax-table)
     ))
