@@ -230,7 +230,7 @@ Does nothing yet."
     (save-excursion
       (save-match-data
         (goto-char (point-min))
-        (loop while (re-search-forward "^=head[1234]\s+\\(.*\\)$" nil t) collect
+        (loop while (re-search-forward "^=head[1-4]\s+\\(.*\\)$" nil t) collect
               (match-string-no-properties 1))))))
 
 (defun pod-linkable-sections-for-module (module)
@@ -330,7 +330,7 @@ Does nothing yet."
 (defun pod-add-support-for-outline-minor-mode ()
   "Provides additional menus from =head lines in `outline-minor-mode'."
   (make-local-variable 'outline-regexp)
-  (setq outline-regexp "=head[1234] ")
+  (setq outline-regexp "=head[1-4]\s")
   (make-local-variable 'outline-level)
   (setq outline-level
         (function
@@ -447,7 +447,7 @@ Does nothing yet."
   ;; (setq indent-line-function 'pod-indent-line)
   (setq major-mode 'pod-mode)
   (setq mode-name "POD")
-  (setq imenu-generic-expression '((nil "^=head[1234] +\\(.*\\)" 1)))
+  (setq imenu-generic-expression '((nil "^=head[1-4] +\\(.*\\)" 1)))
   (run-hooks 'pod-mode-hook)
   (pod-add-support-for-outline-minor-mode)
   (pod-add-support-for-weaver)
