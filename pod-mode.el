@@ -427,28 +427,28 @@ escapes."
     (pod-enable-weaver-collector-keywords (getf weaver-config 'collectors))
     (message "Pod::Weaver keywords loaded.")))
 
-(defvar pod-weaver-config-buffer "")
-
 (defun pod-load-weaver-config (dir)
   "Load additional pod keywords from dist.ini/weaver.ini in DIR."
   (let* ((proc (start-process-shell-command
                 (concat "weaverconf-" (buffer-name (current-buffer)))
                 nil (format "cd %s; dzil weaverconf -f lisp" dir))))
-    (make-local-variable 'pod-weaver-config-buffer)
+    (set-process-plist proc (list :buffer (current-buffer)
+                                  :output ""))
     (set-process-filter
      proc (lambda (proc str)
-            (setq pod-weaver-config-buffer (concat pod-weaver-config-buffer str))))
-    (set-process-plist proc (list :buffer (current-buffer)))
+            (let ((plist (process-plist proc)))
+              (plist-put plist :output (concat (plist-get plist :output) str)))))
     (set-process-sentinel
      proc (lambda (proc event)
             (if (string-equal event "finished\n")
-                (let ((weaver-config
-                       (ignore-errors
-                         (eval (car (read-from-string pod-weaver-config-buffer))))))
+                (let* ((plist (process-plist proc))
+                       (weaver-config
+                        (ignore-errors
+                          (eval (car (read-from-string
+                                      (plist-get plist :output)))))))
                   (if weaver-config (pod-enable-weaver-features
                                      (plist-get (process-plist proc) :buffer)
-                                     weaver-config))))
-            (setq pod-weaver-config-buffer "")))))
+                                     weaver-config))))))))
 
 (defun pod-add-support-for-weaver ()
   (let ((project-root (ignore-errors (eproject-maybe-turn-on))))
