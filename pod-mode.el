@@ -367,9 +367,9 @@ escapes."
                             "\s"))
                    (cdr (assoc (match-string-no-properties 1)
                                pod-weaver-section-keywords))
-                 (string-to-int (buffer-substring
-                                 (+ (point) 5)
-                                 (+ (point) 6))))))))))
+                 (string-to-number (buffer-substring
+                                    (+ (point) 5)
+                                    (+ (point) 6))))))))))
 
 (defun pod-enable-weaver-collector-keywords (collectors)
   (let ((collectors-by-replacement))
@@ -389,7 +389,7 @@ escapes."
                            (setcdr (last pos) (list cmd)))))
                   when (string-match "^head\\([1-4]\\)$" new-name)
                   collect (cons (symbol-name cmd)
-                                (string-to-int
+                                (string-to-number
                                  (match-string-no-properties 1 new-name)))))
       (let ((section-regexp
              (concat "="
