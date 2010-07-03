@@ -357,7 +357,7 @@ Does nothing yet."
                                             (cdr i)))
                         "\\)\\(.*\\)"))
                  (let ((n (symbol-name (car i))))
-                   (if (string-match "^head[1234]$" n)
+                   (if (string-match-p "^head[1234]$" n)
                        (list
                         `(1 (quote
                              ,(intern (format "pod-mode-%s-face" n))))
