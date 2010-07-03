@@ -244,7 +244,8 @@ Does nothing yet."
             (call-process "perldoc" nil (current-buffer) nil "-T" "-u" module)
             (goto-char (point-min))
             (when (and (> (count-lines (point-min) (point-max)) 1)
-                       (not (re-search-forward "No documentation found for .*" nil t)))
+                       (not (re-search-forward
+                             "No documentation found for .*" nil t)))
               (pod-linkable-sections-for-buffer (current-buffer)))))
       (kill-buffer (current-buffer)))))
 
@@ -281,7 +282,8 @@ Does nothing yet."
 
 (defun pod-link-module (module &optional text)
   (interactive
-   (list (completing-read "Module: " (pod-linkable-modules current-prefix-arg) nil nil)
+   (list (completing-read "Module: "
+                          (pod-linkable-modules current-prefix-arg) nil nil)
          (read-string "Text: ")))
   (pod-link module text))
 
