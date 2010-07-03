@@ -349,9 +349,6 @@ escapes."
     st)
   "Syntax table for `pod-mode'.")
 
-(defun pod-set-syntax-table ()
-  (set-syntax-table pod-mode-syntax-table))
-
 (defun pod-add-support-for-outline-minor-mode ()
   "Provides additional menus from =head lines in `outline-minor-mode'."
   (make-local-variable 'outline-regexp)
@@ -468,7 +465,7 @@ escapes."
   "Major mode for editing POD files (Plain Old Documentation for Perl)."
   (interactive)
   (kill-all-local-variables)
-  (pod-set-syntax-table)
+  (set-syntax-table pod-mode-syntax-table)
   (use-local-map pod-mode-map)
   (make-local-variable 'font-lock-defaults)
   (setq font-lock-defaults '(pod-font-lock-keywords 't))
