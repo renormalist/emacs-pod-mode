@@ -324,53 +324,87 @@ Does nothing yet."
     (set-syntax-table pod-mode-syntax-table)
     ))
 
+(defvar pod-weaver-section-keywords nil)
+(make-local-variable 'pod-weaver-section-keywords)
+
 (defun pod-add-support-for-outline-minor-mode ()
   "Provides additional menus from =head lines in `outline-minor-mode'."
   (make-local-variable 'outline-regexp)
   (setq outline-regexp "=head[1234] ")
   (make-local-variable 'outline-level)
   (setq outline-level
-        (function (lambda ()
-                    (save-excursion
-                      (string-to-int (buffer-substring (+ (point) 5) (+ (point) 6)))
-                      ))))
-  )
+        (function
+         (lambda ()
+           (save-excursion
+             (save-match-data
+               (if (looking-at
+                    (concat "^="
+                            (regexp-opt
+                             (mapcar (lambda (i) (car i))
+                                     pod-weaver-section-keywords) t)
+                            "\s"))
+                   (cdr (assoc (match-string-no-properties 1)
+                               pod-weaver-section-keywords))
+                 (string-to-int (buffer-substring
+                                 (+ (point) 5)
+                                 (+ (point) 6)))))))))
 
 (defun pod-enable-weaver-collector-keywords (collectors)
   (let ((collectors-by-replacement))
-    (loop for col in collectors do
-          (let* ((cmd (getf col 'command))
-                 (new-cmd (getf col 'new_command))
-                 (pos (loop for i in collectors-by-replacement do
-                            (when (equal (car i) new-cmd)
-                              (return i)))))
-            (if (not pos)
-                (push (list new-cmd cmd) collectors-by-replacement)
-              (setcdr (last pos) (list cmd)))))
-    (setf
-     pod-font-lock-keywords
-     (append
-      pod-font-lock-keywords
-      (mapcar (lambda (i)
-                (append
-                 (list (concat
-                        "^\\(="
-                        (regexp-opt (mapcar (lambda (k) (symbol-name k))
-                                            (cdr i)))
-                        "\\)\\(.*\\)"))
-                 (let ((n (symbol-name (car i))))
-                   (if (string-match-p "^head[1234]$" n)
+    (save-match-data
+      (setf pod-weaver-section-keywords
+            (loop for col in collectors
+                  with cmd with new-cmd with new-name
+                  do (progn
+                       (setq cmd (getf col 'command)
+                             new-cmd (getf col 'new_command)
+                             new-name (symbol-name new-cmd))
+                       (let ((pos (loop for i in collectors-by-replacement do
+                                        (when (equal (car i) new-cmd)
+                                          (return i)))))
+                         (if (not pos)
+                             (push (list new-cmd cmd) collectors-by-replacement)
+                           (setcdr (last pos) (list cmd)))))
+                  when (string-match "^head\\([1-4]\\)$" new-name)
+                  collect (cons (symbol-name cmd)
+                                (string-to-int
+                                 (match-string-no-properties 1 new-name)))))
+      (let ((section-regexp
+             (concat "="
+                     (regexp-opt
+                      (append
+                       (mapcar (lambda (i) (car i))
+                               pod-weaver-section-keywords)
+                       (loop for i from 1 to 4
+                             collect (concat "head" (int-to-string i)))))
+                     "\s+")))
+        (setf outline-regexp section-regexp)
+        (setf imenu-generic-expression
+              `((nil ,(concat "^" section-regexp "\\(.*\\)") 1))))
+      (setf
+       pod-font-lock-keywords
+       (append
+        pod-font-lock-keywords
+        (mapcar (lambda (i)
+                  (append
+                   (list (concat
+                          "^\\(="
+                          (regexp-opt (mapcar (lambda (k) (symbol-name k))
+                                              (cdr i)))
+                          "\\)\\(.*\\)"))
+                   (let ((n (symbol-name (car i))))
+                     (if (string-match-p "^head[1-4]$" n)
+                         (list
+                          `(1 (quote
+                               ,(intern (format "pod-mode-%s-face" n))))
+                          `(2 (quote
+                               ,(intern (format "pod-mode-%s-text-face" n)))))
                        (list
-                        `(1 (quote
-                             ,(intern (format "pod-mode-%s-face" n))))
-                        `(2 (quote
-                             ,(intern (format "pod-mode-%s-text-face" n)))))
-                     (list
-                      '(1 'pod-mode-command-face)
-                      '(2 'pod-mode-command-text-face))))))
-              collectors-by-replacement))))
-  (setq font-lock-mode-major-mode nil)
-  (font-lock-fontify-buffer))
+                        '(1 'pod-mode-command-face)
+                        '(2 'pod-mode-command-text-face))))))
+                collectors-by-replacement))))
+    (setq font-lock-mode-major-mode nil)
+    (font-lock-fontify-buffer))))
 
 (defun pod-enable-weaver-features (weaver-config)
   (pod-enable-weaver-collector-keywords (getf weaver-config 'collectors))
