@@ -344,14 +344,13 @@ escapes."
     map)
   "Keymap for POD major mode.")
 
-(defvar pod-mode-syntax-table nil
+(defvar pod-mode-syntax-table
+  (let ((st (make-syntax-table)))
+    st)
   "Syntax table for `pod-mode'.")
 
-(defun pod-create-syntax-table ()
-  (when (not pod-mode-syntax-table)
-    (setq pod-mode-syntax-table (make-syntax-table))
-    (set-syntax-table pod-mode-syntax-table)
-    ))
+(defun pod-set-syntax-table ()
+  (set-syntax-table pod-mode-syntax-table))
 
 (defun pod-add-support-for-outline-minor-mode ()
   "Provides additional menus from =head lines in `outline-minor-mode'."
@@ -469,7 +468,7 @@ escapes."
   "Major mode for editing POD files (Plain Old Documentation for Perl)."
   (interactive)
   (kill-all-local-variables)
-  (pod-create-syntax-table)
+  (pod-set-syntax-table)
   (use-local-map pod-mode-map)
   (make-local-variable 'font-lock-defaults)
   (setq font-lock-defaults '(pod-font-lock-keywords 't))
