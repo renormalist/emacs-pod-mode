@@ -218,12 +218,6 @@ escapes."
 (defvar pod-font-lock-keywords pod-font-lock-keywords-3
   "Default highlighting expressions for POD mode.")
 
-;; no special indenting, just pure text mode
-(defun pod-indent-line ()
-  "Indent current line as POD code.
-Does nothing yet."
-  (interactive)
-  )
 
 (defun pod-linkable-sections-for-buffer (buffer)
   (with-current-buffer buffer
@@ -443,8 +437,6 @@ Does nothing yet."
   (use-local-map pod-mode-map)
   (make-local-variable 'font-lock-defaults)
   (setq font-lock-defaults '(pod-font-lock-keywords 't))
-  ;; (make-local-variable 'indent-line-function)
-  ;; (setq indent-line-function 'pod-indent-line)
   (setq major-mode 'pod-mode)
   (setq mode-name "POD")
   (setq imenu-generic-expression '((nil "^=head[1-4] +\\(.*\\)" 1)))
