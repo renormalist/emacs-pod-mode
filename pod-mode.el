@@ -21,7 +21,8 @@
 ;;;
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with this program; if not, write to the Free Software
-;;; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+;;; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+;;; MA 02110-1301, USA.
 
 ;;; Tested on i386-linux with XEmacs 21.4.
 ;;; Tested on i386-linux with GNU Emacs 21.2.1.
