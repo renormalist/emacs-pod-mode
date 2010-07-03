@@ -218,14 +218,24 @@ escapes."
 (defvar pod-font-lock-keywords pod-font-lock-keywords-3
   "Default highlighting expressions for POD mode.")
 
+(defvar pod-weaver-section-keywords nil)
+(make-local-variable 'pod-weaver-section-keywords)
 
-(defun pod-linkable-sections-for-buffer (buffer)
+(defun pod-linkable-sections-for-buffer (buffer &optional section-keywords)
   (with-current-buffer buffer
     (save-excursion
       (save-match-data
         (goto-char (point-min))
-        (loop while (re-search-forward "^=head[1-4]\s+\\(.*\\)$" nil t) collect
-              (match-string-no-properties 1))))))
+        (loop while (re-search-forward
+                     (concat "^="
+                             (regexp-opt
+                              (append
+                               (loop for i from 1 to 4
+                                     collect (concat "head" (int-to-string i)))
+                               section-keywords))
+                             "\s+\\(.*\\)$")
+                     nil t)
+              collect (match-string-no-properties 1))))))
 
 (defun pod-linkable-sections-for-module (module)
   (with-current-buffer (get-buffer-create (concat "*POD " module "*"))
@@ -246,7 +256,10 @@ escapes."
 (defun pod-linkable-sections (&optional module)
   (if module
       (pod-linkable-sections-for-module module)
-    (pod-linkable-sections-for-buffer (current-buffer))))
+    (pod-linkable-sections-for-buffer
+     (current-buffer)
+     (mapcar (lambda (i) (car i))
+             pod-weaver-section-keywords))))
 
 (defun pod-linkable-modules (&optional re-cache)
   (when (ignore-errors (require 'perldoc))
@@ -317,9 +330,6 @@ escapes."
     (setq pod-mode-syntax-table (make-syntax-table))
     (set-syntax-table pod-mode-syntax-table)
     ))
-
-(defvar pod-weaver-section-keywords nil)
-(make-local-variable 'pod-weaver-section-keywords)
 
 (defun pod-add-support-for-outline-minor-mode ()
   "Provides additional menus from =head lines in `outline-minor-mode'."
