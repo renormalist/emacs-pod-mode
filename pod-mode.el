@@ -59,6 +59,21 @@
 ;;;
 ;;;    (add-hook 'pod-mode-hook 'font-lock-mode)
 ;;;
+;;;
+;;; In addition to the standard POD commands, custom commands as
+;;; defined by a Pod::Weaver configuration are supported. However, for
+;;; those to work, eproject.el as available at
+;;; http://github.com/jrockway/eproject is required.
+;;;
+;;; Make sure to require eproject.el or create an autoload for
+;;; eproject-maybe-turn-on if you expect custom commands to work.
+;;;
+;;;
+;;; When automatically inserting hyperlink formatting codes to modules
+;;; or sections within modules, autocompletion for module names will
+;;; be provided if perldoc.el, as available at
+;;; git://gaffer.ptitcanardnoir.org/perldoc-el.git, is present.
+;;;
 
 ;;; Code:
 
