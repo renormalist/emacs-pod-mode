@@ -6,7 +6,7 @@
 
 ;;; Author: Steffen Schwigon <ss5@renormalist.net>
 ;;;
-;;; Keywords: emacs mode perl pod
+;;; Keywords: perl pod
 ;;; X-URL: http://search.cpan.org/~schwigon/pod-mode/
 
 ;;; This program is free software; you can redistribute it and/or modify
