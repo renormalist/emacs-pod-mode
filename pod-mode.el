@@ -422,9 +422,10 @@ escapes."
     (setq font-lock-mode-major-mode nil)
     (font-lock-fontify-buffer))))
 
-(defun pod-enable-weaver-features (weaver-config)
-  (pod-enable-weaver-collector-keywords (getf weaver-config 'collectors))
-  (message "Pod::Weaver keywords loaded."))
+(defun pod-enable-weaver-features (buffer weaver-config)
+  (with-current-buffer buffer
+    (pod-enable-weaver-collector-keywords (getf weaver-config 'collectors))
+    (message "Pod::Weaver keywords loaded.")))
 
 (defvar pod-weaver-config-buffer "")
 
@@ -437,13 +438,16 @@ escapes."
     (set-process-filter
      proc (lambda (proc str)
             (setq pod-weaver-config-buffer (concat pod-weaver-config-buffer str))))
+    (set-process-plist proc (list :buffer (current-buffer)))
     (set-process-sentinel
      proc (lambda (proc event)
             (if (string-equal event "finished\n")
                 (let ((weaver-config
                        (ignore-errors
                          (eval (car (read-from-string pod-weaver-config-buffer))))))
-                  (if weaver-config (pod-enable-weaver-features weaver-config))))
+                  (if weaver-config (pod-enable-weaver-features
+                                     (plist-get (process-plist proc) :buffer)
+                                     weaver-config))))
             (setq pod-weaver-config-buffer "")))))
 
 (defun pod-add-support-for-weaver ()
