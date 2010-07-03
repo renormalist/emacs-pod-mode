@@ -257,21 +257,40 @@ Does nothing yet."
   )
 
 (defun pod-enable-weaver-collector-keywords (collectors)
-  (let* ((keyword-list (mapcar (lambda (collector)
-                                 (symbol-name (getf collector 'command)))
-                               collectors))
-         (keyword-re (concat "^\\(=" (regexp-opt keyword-list) "\\)\\(.*\\)")))
-    (setf pod-font-lock-keywords
-          ;; TODO: a weaver keyword is often equivalent to an existing
-          ;; pod command, and the weaver config we get tells us
-          ;; which. We should use the appropriate face for them, if we
-          ;; got any, like for =head*
-          (append pod-font-lock-keywords
-                  `((,keyword-re
-                     (1 'pod-mode-command-face)
-                     (2 'pod-mode-command-text-face)))))
-    (setq font-lock-mode-major-mode nil)
-    (font-lock-fontify-buffer)))
+  (let ((collectors-by-replacement))
+    (loop for col in collectors do
+          (let* ((cmd (getf col 'command))
+                 (new-cmd (getf col 'new_command))
+                 (pos (loop for i in collectors-by-replacement do
+                            (when (equal (car i) new-cmd)
+                              (return i)))))
+            (if (not pos)
+                (push (list new-cmd cmd) collectors-by-replacement)
+              (setcdr (last pos) (list cmd)))))
+    (setf
+     pod-font-lock-keywords
+     (append
+      pod-font-lock-keywords
+      (mapcar (lambda (i)
+                (append
+                 (list (concat
+                        "^\\(="
+                        (regexp-opt (mapcar (lambda (k) (symbol-name k))
+                                            (cdr i)))
+                        "\\)\\(.*\\)"))
+                 (let ((n (symbol-name (car i))))
+                   (if (string-match "^head[1234]$" n)
+                       (list
+                        `(1 (quote
+                             ,(intern (format "pod-mode-%s-face" n))))
+                        `(2 (quote
+                             ,(intern (format "pod-mode-%s-text-face" n)))))
+                     (list
+                      '(1 'pod-mode-command-face)
+                      '(2 'pod-mode-command-text-face))))))
+              collectors-by-replacement))))
+  (setq font-lock-mode-major-mode nil)
+  (font-lock-fontify-buffer))
 
 (defun pod-enable-weaver-features (weaver-config)
   (pod-enable-weaver-collector-keywords (getf weaver-config 'collectors))
