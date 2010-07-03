@@ -186,14 +186,13 @@ escapes."
   "Face used to highlight quoted strings in POD"
   :group 'pod-mode-faces)
 
-;; default variables
-(defvar pod-mode-hook nil)
+(defvar pod-mode-hook nil
+  "List of functions to be called when activating `pod-mode'.")
 
 ;;; Version: 1.01
 (defvar pod-version "1.01"
   "Version of POD mode.")
 
-;; syntax highlighting: standard keywords
 (let* ((head-sizes '(1.9 1.7 1.5 1.3))
        (heads (loop for i from 1 to (length head-sizes) collect
                     (cons i (nth (- i 1) head-sizes)))))
@@ -222,12 +221,10 @@ escapes."
        ("^[ \t]+\\(.*\\)$" 1 'pod-mode-verbatim-face)))
     "Minimal highlighting expressions for POD mode."))
 
-;; syntax highlighting: additional keywords
 (defconst pod-font-lock-keywords-2
   (append pod-font-lock-keywords-1 '())
   "Additional Keywords to highlight in POD mode.")
 
-;; syntax highlighting: even more keywords
 (defconst pod-font-lock-keywords-3
   (append pod-font-lock-keywords-2
           '(
@@ -243,7 +240,6 @@ escapes."
             ))
   "Balls-out highlighting in POD mode.")
 
-;; default level of highlight to maximum
 (defvar pod-font-lock-keywords pod-font-lock-keywords-3
   "Default highlighting expressions for POD mode.")
 
@@ -339,7 +335,6 @@ escapes."
              section))
    text))
 
-;; keymap
 (defvar pod-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "C-c C-l u") 'pod-link-uri)
@@ -349,11 +344,9 @@ escapes."
     map)
   "Keymap for POD major mode.")
 
-;; no special syntax table
 (defvar pod-mode-syntax-table nil
   "Syntax table for `pod-mode'.")
 
-;; create and activate syntax table
 (defun pod-create-syntax-table ()
   (when (not pod-mode-syntax-table)
     (setq pod-mode-syntax-table (make-syntax-table))
@@ -471,7 +464,6 @@ escapes."
   (let ((project-root (ignore-errors (eproject-maybe-turn-on))))
     (if project-root (pod-load-weaver-config project-root))))
 
-;; main
 (defun pod-mode ()
   "Major mode for editing POD files (Plain Old Documentation for Perl)."
   (interactive)
