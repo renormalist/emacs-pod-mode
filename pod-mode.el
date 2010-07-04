@@ -259,7 +259,6 @@ escapes."
            (let* ((end (match-beginning 1))
                   (match-data (funcall ,body beg end)))
              (when (match-data)
-               (message ,(concat "matched " code))
                (store-match-data (append
                                   (list (- beg n-lt 1) beg)
                                   match-data
