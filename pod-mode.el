@@ -138,6 +138,20 @@
   "Face used to highlight verbatim paragraphs in POD"
   :group 'pod-mode-faces)
 
+(defface pod-mode-formatting-code-character-face
+  '((((class grayscale) (background light))
+     (:foreground "Gray90" :weight bold :slant italic))
+    (((class grayscale) (background dark))
+     (:foreground "DimGray" :weight bold :slant italic))
+    (((class color) (min-colors 88) (background light)) (:foreground "sienna"))
+    (((class color) (min-colors 88) (background dark)) (:foreground "LightGoldenrod"))
+    (((class color) (min-colors 16) (background light)) (:foreground "DarkGoldenrod"))
+    (((class color) (min-colors 16) (background dark)) (:foreground "LightGoldenrod"))
+    (((class color) (min-colors 8)) (:foreground "yellow" :weight light))
+    (t (:weight bold :slant italic)))
+  "Face used to highlight formatting codes in POD"
+  :group 'pod-mode-faces)
+
 (defface pod-mode-formatting-code-face
   '((((class grayscale) (background light))
      (:foreground "LightGray" :weight bold :underline t))
@@ -149,7 +163,7 @@
     (((class color) (min-colors 16) (background dark)) (:foreground "Aquamarine"))
     (((class color) (min-colors 8)) (:foreground "magenta"))
     (t (:weight bold :underline t)))
-  "Face used to highlight formatting codes in POD"
+  "Face used to highlight text within formatting codes in POD"
   :group 'pod-mode-faces)
 
 (defface pod-mode-formatting-code-i-face
@@ -242,9 +256,14 @@ escapes."
                         (apply 'concat (loop for i from 1 to n-lt collect ">"))
                         "\\)")
                 limit t)
-           (let ((match-data (funcall ,body beg (match-beginning 1))))
+           (let* ((end (match-beginning 1))
+                  (match-data (funcall ,body beg end)))
              (when (match-data)
-               (store-match-data match-data)
+               (message ,(concat "matched " code))
+               (store-match-data (append
+                                  (list (- beg n-lt 1) beg)
+                                  match-data
+                                  (list end (+ end n-lt))))
                t)))))))
 
 (defun pod-matcher-for-simple-code (code)
@@ -256,9 +275,13 @@ escapes."
   (append pod-font-lock-keywords-2
           (loop for code in '("C" "F" "X" "Z" "S")
                 collect `(,(pod-matcher-for-simple-code code)
-                          (0 'pod-mode-formatting-code-face append)))
+                          (0 'pod-mode-formatting-code-character-face prepend)
+                          (1 'pod-mode-formatting-code-face append)
+                          (2 'pod-mode-formatting-code-character-face prepend)))
           `((,(pod-matcher-for-simple-code "E")
-             (0 'pod-mode-alternative-formatting-code-face append))
+             (0 'pod-mode-formatting-code-character-face prepend)
+             (1 'pod-mode-alternative-formatting-code-face append)
+             (2 'pod-mode-formatting-code-character-face prepend))
             (,(pod-matcher-for-code
                "L" (lambda (beg end)
                      (goto-char beg)
@@ -266,12 +289,18 @@ escapes."
                          (list beg (match-end 1)
                                (+ (match-end 1) 1) end)
                        (list 0 0 beg end))))
-             (0 'pod-mode-formatting-code-face append)
-             (1 'pod-mode-alternative-formatting-code-face append))
+             (0 'pod-mode-formatting-code-character-face prepend)
+             (1 'pod-mode-formatting-code-face append)
+             (2 'pod-mode-alternative-formatting-code-face append)
+             (3 'pod-mode-formatting-code-character-face prepend))
             (,(pod-matcher-for-simple-code "I")
-             (0 'pod-mode-formatting-code-i-face append))
+             (0 'pod-mode-formatting-code-character-face prepend)
+             (1 'pod-mode-formatting-code-i-face append)
+             (2 'pod-mode-formatting-code-character-face prepend))
             (,(pod-matcher-for-simple-code "B")
-             (0 'pod-mode-formatting-code-b-face append))
+             (0 'pod-mode-formatting-code-character-face prepend)
+             (1 'pod-mode-formatting-code-b-face append)
+             (2 'pod-mode-formatting-code-character-face prepend))
             ("\"\\([^\"]+\\)\""
              (0 'pod-mode-string-face))))
   "Balls-out highlighting in POD mode.")
