@@ -265,13 +265,10 @@ escapes."
                                   (list end (+ end n-lt))))
                t)))))))
 
-(defun pod-matcher-for-simple-code (code)
-  (pod-matcher-for-code
-   code '(lambda (beg end)
-           (list beg end))))
-
 (defun pod-keyword-for-simple-code (code face)
-  `(,(pod-matcher-for-simple-code code)
+  `(,(pod-matcher-for-code
+      code '(lambda (beg end)
+              (list beg end)))
     (0 'pod-mode-formatting-code-character-face prepend)
     (1 ',face append)
     (2 'pod-mode-formatting-code-character-face prepend)))
