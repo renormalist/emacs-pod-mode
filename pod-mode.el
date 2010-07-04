@@ -236,7 +236,6 @@ escapes."
              (2 'pod-mode-alternative-formatting-code-face))
             ("L<\\([^|>]+\\)>" 1 'pod-mode-alternative-formatting-code-face)
             ("E<\\([^>]*\\)>" 1 'pod-mode-alternative-formatting-code-face)
-            ("\"\\([^\"]+\\)\"" 0 'pod-mode-string-face)
             (,(lambda (limit)
                 (when (re-search-forward "C\\(?:\\(<\\)[^<]\\)\\|\\(?:\\(<\\{2,\\}\\)\s\\)" limit t)
                   (let ((beg (or (match-end 1)
@@ -257,6 +256,7 @@ escapes."
                       (store-match-data (list beg (match-beginning 1)))
                       t))))
              (0 'pod-mode-formatting-code-face))
+            ("\"\\([^\"]+\\)\"" 0 'pod-mode-string-face)
             ))
   "Balls-out highlighting in POD mode.")
 
