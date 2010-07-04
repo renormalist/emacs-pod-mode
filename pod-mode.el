@@ -287,10 +287,11 @@ escapes."
              pod-weaver-section-keywords))))
 
 (defun pod-linkable-modules (&optional re-cache)
-  (when (ignore-errors (require 'perldoc))
-    (when (or re-cache (not perldoc-modules-alist))
-      (message "Building completion list of all perl modules..."))
-    (perldoc-modules-alist re-cache)))
+  (save-current-buffer
+    (when (ignore-errors (require 'perldoc))
+      (when (or re-cache (not perldoc-modules-alist))
+        (message "Building completion list of all perl modules..."))
+      (perldoc-modules-alist re-cache))))
 
 (defun pod-link (link &optional text)
   (insert (concat "L<"
