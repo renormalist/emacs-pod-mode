@@ -231,8 +231,7 @@ escapes."
                                "for" "begin" "end" "encoding"))
                  "\\)\\(.*\\)")
         (1 'pod-mode-command-face)
-        (2 'pod-mode-command-text-face))
-       ("^[ \t]+\\(.*\\)$" 1 'pod-mode-verbatim-face)))
+        (2 'pod-mode-command-text-face))))
     "Minimal highlighting expressions for POD mode."))
 
 (defconst pod-font-lock-keywords-2
@@ -266,9 +265,8 @@ escapes."
                t)))))))
 
 (defun pod-keyword-for-simple-code (code face)
-  `(,(pod-matcher-for-code
-      code '(lambda (beg end)
-              (list beg end)))
+  `(,(pod-matcher-for-code code '(lambda (beg end)
+                                   (list beg end)))
     (0 'pod-mode-formatting-code-character-face prepend)
     (1 ',face append)
     (2 'pod-mode-formatting-code-character-face prepend)))
@@ -292,7 +290,8 @@ escapes."
              (2 'pod-mode-alternative-formatting-code-face append)
              (3 'pod-mode-formatting-code-character-face prepend))
             ("\"\\([^\"]+\\)\""
-             (0 'pod-mode-string-face))))
+             (0 'pod-mode-string-face))
+            ("^[ \t]+\\(.*\\)$" 1 'pod-mode-verbatim-face prepend)))
   "Balls-out highlighting in POD mode.")
 
 (defvar pod-font-lock-keywords pod-font-lock-keywords-3
