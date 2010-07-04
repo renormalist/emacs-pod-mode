@@ -231,9 +231,9 @@ escapes."
             ("[CFXZS]<\\([^>]*\\)>" 1 'pod-mode-formatting-code-face)
             ("I<\\([^>]*\\)>" 1 'pod-mode-formatting-code-i-face)
             ("B<\\([^>]*\\)>" 1 'pod-mode-formatting-code-b-face)
-            ("L<\\(\\([^|>]*\\)|\\)\\([^>]+\\)>"
-             (2 'pod-mode-formatting-code-face)
-             (3 'pod-mode-alternative-formatting-code-face))
+            ("L<\\(?:\\([^|>]*\\)|\\)\\([^>]+\\)>"
+             (1 'pod-mode-formatting-code-face)
+             (2 'pod-mode-alternative-formatting-code-face))
             ("L<\\([^|>]+\\)>" 1 'pod-mode-alternative-formatting-code-face)
             ("E<\\([^>]*\\)>" 1 'pod-mode-alternative-formatting-code-face)
             ("\"\\([^\"]+\\)\"" 0 'pod-mode-string-face)
