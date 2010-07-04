@@ -239,6 +239,19 @@ escapes."
   "Additional Keywords to highlight in POD mode.")
 
 (defun pod-matcher-for-code (code body)
+  "Create a matcher function for a given POD formatting CODE.
+Will return a quoted lambda as expected by `font-lock-keywords'
+as MATCHER.
+
+When executing the lambda, it will match a POD formatting code
+introduced with the character CODE and as described in perlpod.
+
+BODY is expected to be a quoted lambda.  It will be executed
+after a successful match of a well-balanced formatting code.
+It'll get two arguments, the start and end position of the text
+contained in the formatting code.  It should return a list of
+positions suitable to use as match data for later highlighting by
+`font-lock-keywords'."
   `(lambda (limit)
      (when (re-search-forward
             ,(concat
@@ -266,6 +279,14 @@ escapes."
                t)))))))
 
 (defun pod-keyword-for-simple-code (code face)
+  "Build a `font-lock-keywords' keyword for a POD formatting code.
+CODE is the character introducing the formatting code to be
+matched.  FACE is the face that should be used to map the text
+within the formattign code.
+
+In addition to matching the code's content with FACE, the
+formatting code itself will be highlighted using
+`pod-mode-formatting-code-character-face'."
   `(,(pod-matcher-for-code code '(lambda (beg end)
                                    (list beg end)))
     (0 'pod-mode-formatting-code-character-face prepend)
@@ -300,10 +321,18 @@ escapes."
 (defvar pod-font-lock-keywords pod-font-lock-keywords-3
   "Default highlighting expressions for POD mode.")
 
-(defvar pod-weaver-section-keywords nil)
+(defvar pod-weaver-section-keywords nil
+  "List of custom Pod::Weaver keywords describing sections.
+This is an alist, mapping strings with pod commands to a number
+describing their level within the document.")
 (make-local-variable 'pod-weaver-section-keywords)
 
 (defun pod-linkable-sections-for-buffer (buffer &optional section-keywords)
+  "Extract POD sections from BUFFER.
+Returns a list of POD section names with BUFFER.  By default only
+=head commands are looked for.  The optional second argument
+SECTION-KEYWORDS may be used to also extract section names from
+additional pod commands."
   (with-current-buffer buffer
     (save-excursion
       (save-match-data
@@ -320,6 +349,12 @@ escapes."
               collect (match-string-no-properties 1))))))
 
 (defun pod-linkable-sections-for-module (module)
+  "Extract POD sections from MODULE.
+Opens the documentation of an installed perl MODULE and returns a
+list of all section names in it.
+
+`pod-linkable-sections-for-buffer' is used to actually extract
+the sections."
   (with-current-buffer (get-buffer-create (concat "*POD " module "*"))
     (unwind-protect
         (progn
@@ -336,6 +371,15 @@ escapes."
       (kill-buffer (current-buffer)))))
 
 (defun pod-linkable-sections (&optional module)
+  "Extract POD sections.
+Extracts all POD sections from either the current buffer, or, if
+MODULE is given, from the POD documentation of an installed
+module.
+
+If MODULE is given, `pod-linkable-sections-for-module' will be
+called.  Otherwise `pod-linkable-sections-for-buffer' for
+`current-buffer', and with all additional POD section keywords as
+provided by `pod-weaver-section-keywords'."
   (if module
       (pod-linkable-sections-for-module module)
     (pod-linkable-sections-for-buffer
@@ -344,6 +388,13 @@ escapes."
              pod-weaver-section-keywords))))
 
 (defun pod-linkable-modules (&optional re-cache)
+  "Find all installed perl modules.
+Returns a list of all installed perl modules, as provided by
+function `perldoc-modules-alist'.  This requires `perldoc' to be
+loadable.
+
+If the optional argument RE-CACHE is non-nil, a possibly cached
+version of the module list will be discarded and rebuilt."
   (save-current-buffer
     (when (ignore-errors (require 'perldoc))
       (when (or re-cache (not perldoc-modules-alist))
@@ -351,6 +402,12 @@ escapes."
       (perldoc-modules-alist re-cache))))
 
 (defun pod-link (link &optional text)
+  "Insert a POD hyperlink formatting code.
+Inserts a POD L<> formatting code at point.  The content of the
+code will be LINK.
+
+If the optional argument TEXT is a string and contains anything
+that's not whitespace, it will be used as the link title."
   (insert (concat "L<"
                   (when (and (stringp text)
                              (string-match-p "[^\s]" text))
@@ -359,18 +416,40 @@ escapes."
                   ">")))
 
 (defun pod-link-uri (uri &optional text)
+  "Insert POD hyperlink formatting code for a URL.
+Calls `pod-link' with URI and TEXT.
+
+When called interactively, URI and TEXT will be read from the
+minibuffer."
   (interactive
    (list (read-string "URI: ")
          (read-string "Text: ")))
   (pod-link uri text))
 
 (defun pod-link-section (section &optional text)
+  "Insert hyperlink formatting code for a POD section.
+Insert an L<> formatting code pointing to a section within the
+current document.
+
+When called interactively, SECTION and TEXT will be read from the
+minibuffer.
+
+For SECTION, `pod-linkable-sections' will be used to provide
+completions within the minibuffer."
   (interactive
    (list (completing-read "Section: " (pod-linkable-sections) nil nil)
          (read-string "Text: ")))
   (pod-link-module-section "" section text))
 
 (defun pod-link-module (module &optional text)
+  "Insert POD hyperlink formatting code for a module.
+Insert an L<> formatting code pointing to a MODULE.
+
+When called interactively, MODULE and TEXT will be read from the
+minibuffer.
+
+When reading MODULE from the minibuffer, `pod-linkable-modules'
+will be used to provide completions."
   (interactive
    (list (completing-read "Module: "
                           (pod-linkable-modules current-prefix-arg) nil nil)
@@ -378,6 +457,16 @@ escapes."
   (pod-link module text))
 
 (defun pod-link-module-section (module section &optional text)
+  "Insert POD hyperlink formatting code for a section in a module.
+Insert an L<> formatting code pointing to a part of MODULE
+documentation as described by SECTION.
+
+When called interactive, MODULE, SECTION, and TEXT will be read
+from the minibuffer.
+
+When reading MODULE and SECTION from the minibuffer,
+`pod-linkable-modules' and `pod-linkable-sections', respectively,
+will be used to provide completions."
   (interactive
    (let ((module (completing-read "Module: "
                                   (pod-linkable-modules current-prefix-arg)
@@ -408,7 +497,7 @@ escapes."
   "Syntax table for `pod-mode'.")
 
 (defun pod-add-support-for-outline-minor-mode ()
-  "Provides additional menus from =head lines in `outline-minor-mode'."
+  "Provides additional menus from section commands for function `outline-minor-mode'."
   (make-local-variable 'outline-regexp)
   (setq outline-regexp "=head[1-4]\s")
   (make-local-variable 'outline-level)
@@ -430,6 +519,11 @@ escapes."
                                     (+ (point) 6))))))))))
 
 (defun pod-enable-weaver-collector-keywords (collectors)
+  "Enable support for Pod::Weaver collector commands.
+Enables fontification for all commands described by COLLECTORS.
+
+Also updates `pod-weaver-section-keywords', `outline-regexp', and
+`imenu-generic-expression' accordingly."
   (let ((collectors-by-replacement))
     (save-match-data
       (setf pod-weaver-section-keywords
@@ -487,6 +581,14 @@ escapes."
     (font-lock-fontify-buffer)))
 
 (defun pod-enable-weaver-features (buffer weaver-config)
+  "Enable support for Pod::Weaver features.
+Enables support for custom Pod::Weaver commands within a BUFFER.
+
+WEAVER-CONFIG is a structure as returned by
+\"dzil weaverconf -f lisp\".
+
+Currently only supports collector commands via
+`pod-enable-weaver-collector-keywords'."
   (with-current-buffer buffer
     (pod-enable-weaver-collector-keywords (getf weaver-config 'collectors))
     (message "Pod::Weaver keywords loaded.")))
@@ -515,6 +617,13 @@ escapes."
                                      weaver-config))))))))
 
 (defun pod-add-support-for-weaver ()
+  "Enable support for Pod::Weaver features in the current buffer.
+Calls `pod-load-weaver-config' with the project directory of the
+current buffer's file.  To be able to successfully determine the
+project directory, `eproject-maybe-turn-on' will be used and
+'eproject.el' is expected to be loaded.
+
+Does nothing if finding the project directory fails."
   (let ((project-root (ignore-errors (eproject-maybe-turn-on))))
     (if project-root (pod-load-weaver-config project-root))))
 
