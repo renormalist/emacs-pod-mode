@@ -225,7 +225,7 @@ escapes."
   (append pod-font-lock-keywords-1 '())
   "Additional Keywords to highlight in POD mode.")
 
-(defun pod-matcher-for-code (code)
+(defun pod-matcher-for-code (code body)
   `(lambda (limit)
      (when (re-search-forward
             ,(concat code "\\(?:\\(?:\\(<\\)[^<]\\)\\|\\(?:\\(<\\{2,\\}\\)\s\\)\\)")
@@ -240,25 +240,38 @@ escapes."
                         (apply 'concat (loop for i from 1 to n-lt collect ">"))
                         "\\)")
                 limit t)
-           (store-match-data (list beg (match-beginning 1)))
-           t)))))
+           (let ((match-data (funcall ,body beg (match-beginning 1))))
+             (when (match-data)
+               (store-match-data match-data)
+               t)))))))
+
+(defun pod-matcher-for-simple-code (code)
+  (pod-matcher-for-code
+   code '(lambda (beg end)
+           (list beg end))))
 
 (defconst pod-font-lock-keywords-3
   (append pod-font-lock-keywords-2
           (loop for code in '("C" "F" "X" "Z" "S")
-                collect `(,(pod-matcher-for-code code)
+                collect `(,(pod-matcher-for-simple-code code)
                           (0 'pod-mode-formatting-code-face)))
-          (loop for code in '("E" "L")
-                collect `(,(pod-matcher-for-code code)
-                          (0 'pod-mode-alternative-formatting-code-face)))
-          `((,(pod-matcher-for-code "I")
+          `((,(pod-matcher-for-simple-code "E")
+             (0 'pod-mode-alternative-formatting-code-face))
+            (,(pod-matcher-for-code
+               "L" (lambda (beg end)
+                     (goto-char beg)
+                     (if (re-search-forward "\\([^|]\\)|" end t)
+                         (list beg (match-end 1)
+                               (+ (match-end 1) 1) end)
+                       (list 0 0 beg end))))
+             (0 'pod-mode-formatting-code-face)
+             (1 'pod-mode-alternative-formatting-code-face))
+            (,(pod-matcher-for-simple-code "I")
              (0 'pod-mode-formatting-code-i-face))
-            (,(pod-matcher-for-code "B")
-             (0 'pod-mode-formatting-code-b-face)))
-          '(("L<\\(?:\\([^|>]*\\)|\\)\\([^>]+\\)>"
-             (1 'pod-mode-formatting-code-face)
-             (2 'pod-mode-alternative-formatting-code-face))
-            ("\"\\([^\"]+\\)\"" 0 'pod-mode-string-face)))
+            (,(pod-matcher-for-simple-code "B")
+             (0 'pod-mode-formatting-code-b-face))
+            ("\"\\([^\"]+\\)\""
+             (0 'pod-mode-string-face))))
   "Balls-out highlighting in POD mode.")
 
 (defvar pod-font-lock-keywords pod-font-lock-keywords-3
