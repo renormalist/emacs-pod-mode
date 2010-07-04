@@ -271,17 +271,19 @@ escapes."
    code '(lambda (beg end)
            (list beg end))))
 
+(defun pod-keyword-for-simple-code (code face)
+  `(,(pod-matcher-for-simple-code code)
+    (0 'pod-mode-formatting-code-character-face prepend)
+    (1 ',face append)
+    (2 'pod-mode-formatting-code-character-face prepend)))
+
 (defconst pod-font-lock-keywords-3
   (append pod-font-lock-keywords-2
           (loop for code in '("C" "F" "X" "Z" "S")
-                collect `(,(pod-matcher-for-simple-code code)
-                          (0 'pod-mode-formatting-code-character-face prepend)
-                          (1 'pod-mode-formatting-code-face append)
-                          (2 'pod-mode-formatting-code-character-face prepend)))
-          `((,(pod-matcher-for-simple-code "E")
-             (0 'pod-mode-formatting-code-character-face prepend)
-             (1 'pod-mode-alternative-formatting-code-face append)
-             (2 'pod-mode-formatting-code-character-face prepend))
+                collect (pod-keyword-for-simple-code code 'pod-mode-formatting-code-face))
+          `(,(pod-keyword-for-simple-code "E" 'pod-mode-alternative-formatting-code-face)
+            ,(pod-keyword-for-simple-code "I" 'pod-mode-formatting-code-i-face)
+            ,(pod-keyword-for-simple-code "B" 'pod-mode-formatting-code-b-face)
             (,(pod-matcher-for-code
                "L" (lambda (beg end)
                      (goto-char beg)
@@ -293,14 +295,6 @@ escapes."
              (1 'pod-mode-formatting-code-face append)
              (2 'pod-mode-alternative-formatting-code-face append)
              (3 'pod-mode-formatting-code-character-face prepend))
-            (,(pod-matcher-for-simple-code "I")
-             (0 'pod-mode-formatting-code-character-face prepend)
-             (1 'pod-mode-formatting-code-i-face append)
-             (2 'pod-mode-formatting-code-character-face prepend))
-            (,(pod-matcher-for-simple-code "B")
-             (0 'pod-mode-formatting-code-character-face prepend)
-             (1 'pod-mode-formatting-code-b-face append)
-             (2 'pod-mode-formatting-code-character-face prepend))
             ("\"\\([^\"]+\\)\""
              (0 'pod-mode-string-face))))
   "Balls-out highlighting in POD mode.")
