@@ -324,9 +324,9 @@ escapes."
    (let ((module (completing-read "Module: "
                                   (pod-linkable-modules current-prefix-arg)
                                   nil nil)))
-   (list module
-         (completing-read "Section: " (pod-linkable-sections module) nil nil)
-         (read-string "Text: "))))
+     (list module
+           (completing-read "Section: " (pod-linkable-sections module) nil nil)
+           (read-string "Text: "))))
   (pod-link
    (concat module
            "/"
