@@ -254,9 +254,9 @@ escapes."
   (append pod-font-lock-keywords-2
           (loop for code in '("C" "F" "X" "Z" "S")
                 collect `(,(pod-matcher-for-simple-code code)
-                          (0 'pod-mode-formatting-code-face)))
+                          (0 'pod-mode-formatting-code-face append)))
           `((,(pod-matcher-for-simple-code "E")
-             (0 'pod-mode-alternative-formatting-code-face))
+             (0 'pod-mode-alternative-formatting-code-face append))
             (,(pod-matcher-for-code
                "L" (lambda (beg end)
                      (goto-char beg)
@@ -264,12 +264,12 @@ escapes."
                          (list beg (match-end 1)
                                (+ (match-end 1) 1) end)
                        (list 0 0 beg end))))
-             (0 'pod-mode-formatting-code-face)
-             (1 'pod-mode-alternative-formatting-code-face))
+             (0 'pod-mode-formatting-code-face append)
+             (1 'pod-mode-alternative-formatting-code-face append))
             (,(pod-matcher-for-simple-code "I")
-             (0 'pod-mode-formatting-code-i-face))
+             (0 'pod-mode-formatting-code-i-face append))
             (,(pod-matcher-for-simple-code "B")
-             (0 'pod-mode-formatting-code-b-face))
+             (0 'pod-mode-formatting-code-b-face append))
             ("\"\\([^\"]+\\)\""
              (0 'pod-mode-string-face))))
   "Balls-out highlighting in POD mode.")
