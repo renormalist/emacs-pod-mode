@@ -227,8 +227,8 @@ escapes."
 
 (defconst pod-font-lock-keywords-3
   (append pod-font-lock-keywords-2
-          '(
-            ("[CFXZS]<\\([^>]*\\)>" 1 'pod-mode-formatting-code-face)
+          `(
+            ("[FXZS]<\\([^>]*\\)>" 1 'pod-mode-formatting-code-face)
             ("I<\\([^>]*\\)>" 1 'pod-mode-formatting-code-i-face)
             ("B<\\([^>]*\\)>" 1 'pod-mode-formatting-code-b-face)
             ("L<\\(?:\\([^|>]*\\)|\\)\\([^>]+\\)>"
@@ -237,6 +237,26 @@ escapes."
             ("L<\\([^|>]+\\)>" 1 'pod-mode-alternative-formatting-code-face)
             ("E<\\([^>]*\\)>" 1 'pod-mode-alternative-formatting-code-face)
             ("\"\\([^\"]+\\)\"" 0 'pod-mode-string-face)
+            (,(lambda (limit)
+                (when (re-search-forward "C\\(?:\\(<\\)[^<]\\)\\|\\(?:\\(<\\{2,\\}\\)\s\\)" limit t)
+                  (let ((beg (or (match-end 1)
+                                 (match-end 2)))
+                        (n-lt (length (or (match-string-no-properties 1)
+                                          (match-string-no-properties 2)))))
+                    (when (re-search-forward
+                           (concat
+                            (when (> n-lt 1)
+                              "\s")
+                            "\\("
+                            (apply
+                             'concat
+                             (loop for i from 1 to n-lt
+                                   collect ">"))
+                            "\\)")
+                           limit t)
+                      (store-match-data (list beg (match-beginning 1)))
+                      t))))
+             (0 'pod-mode-formatting-code-face))
             ))
   "Balls-out highlighting in POD mode.")
 
