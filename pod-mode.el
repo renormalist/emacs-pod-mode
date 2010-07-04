@@ -274,8 +274,10 @@ escapes."
 (defconst pod-font-lock-keywords-3
   (append pod-font-lock-keywords-2
           (loop for code in '("C" "F" "X" "Z" "S")
-                collect (pod-keyword-for-simple-code code 'pod-mode-formatting-code-face))
-          `(,(pod-keyword-for-simple-code "E" 'pod-mode-alternative-formatting-code-face)
+                collect (pod-keyword-for-simple-code
+                         code 'pod-mode-formatting-code-face))
+          `(,(pod-keyword-for-simple-code
+              "E" 'pod-mode-alternative-formatting-code-face)
             ,(pod-keyword-for-simple-code "I" 'pod-mode-formatting-code-i-face)
             ,(pod-keyword-for-simple-code "B" 'pod-mode-formatting-code-b-face)
             (,(pod-matcher-for-code
