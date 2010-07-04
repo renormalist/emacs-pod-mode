@@ -249,6 +249,7 @@ escapes."
                       (match-end 2)))
              (n-lt (length (or (match-string-no-properties 1)
                                (match-string-no-properties 2)))))
+         (goto-char (- (point) 1))
          (when (re-search-forward
                 (concat (when (> n-lt 1) "\s")
                         "\\("
