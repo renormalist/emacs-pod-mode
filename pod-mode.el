@@ -228,7 +228,9 @@ escapes."
 (defun pod-matcher-for-code (code body)
   `(lambda (limit)
      (when (re-search-forward
-            ,(concat code "\\(?:\\(?:\\(<\\)[^<]\\)\\|\\(?:\\(<\\{2,\\}\\)\s\\)\\)")
+            ,(concat
+              code
+              "\\(?:\\(?:\\(<\\)[^<]\\)\\|\\(?:\\(<\\{2,\\}\\)\s\\)\\)")
             limit t)
        (let ((beg (or (match-end 1)
                       (match-end 2)))
