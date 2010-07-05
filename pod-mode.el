@@ -298,11 +298,12 @@ formatting code itself will be highlighted using
           (loop for code in '("C" "F" "X" "Z" "S")
                 collect (pod-keyword-for-simple-code
                          code 'pod-mode-formatting-code-face))
-          `(,(pod-keyword-for-simple-code
-              "E" 'pod-mode-alternative-formatting-code-face)
-            ,(pod-keyword-for-simple-code "I" 'pod-mode-formatting-code-i-face)
-            ,(pod-keyword-for-simple-code "B" 'pod-mode-formatting-code-b-face)
-            (,(pod-matcher-for-code
+          (list
+           (pod-keyword-for-simple-code
+            "E" 'pod-mode-alternative-formatting-code-face)
+           (pod-keyword-for-simple-code "I" 'pod-mode-formatting-code-i-face)
+           (pod-keyword-for-simple-code "B" 'pod-mode-formatting-code-b-face)
+           `(,(pod-matcher-for-code
                "L" (lambda (beg end)
                      (goto-char beg)
                      (if (re-search-forward "\\([^|]\\)|" end t)
@@ -313,9 +314,9 @@ formatting code itself will be highlighted using
              (1 'pod-mode-formatting-code-face append)
              (2 'pod-mode-alternative-formatting-code-face append)
              (3 'pod-mode-formatting-code-character-face prepend))
-            ("\"\\([^\"]+\\)\""
+           '("\"\\([^\"]+\\)\""
              (0 'pod-mode-string-face))
-            ("^[ \t]+\\(.*\\)$" 1 'pod-mode-verbatim-face prepend)))
+           '("^[ \t]+\\(.*\\)$" 1 'pod-mode-verbatim-face prepend)))
   "Balls-out highlighting in POD mode.")
 
 (defvar pod-font-lock-keywords pod-font-lock-keywords-3
