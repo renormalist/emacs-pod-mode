@@ -630,7 +630,15 @@ Does nothing if finding the project directory fails."
 
 ;;;###autoload
 (defun pod-mode ()
-  "Major mode for editing POD files (Plain Old Documentation for Perl)."
+  "Major mode for editing POD files (Plain Old Documentation for Perl).
+
+Commands:\\<pod-mode-map>
+\\[pod-link]  `pod-link'
+\\[pod-link-section]     `pod-link-section'
+\\[pod-link-module]     `pod-link-module'
+\\[pod-link-module-section]     `pod-link-module-section'
+
+Turning on pod mode calls the hooks in `pod-mode-hook'."
   (interactive)
   (kill-all-local-variables)
   (set-syntax-table pod-mode-syntax-table)
