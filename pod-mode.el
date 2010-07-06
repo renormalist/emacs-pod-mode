@@ -400,7 +400,7 @@ version of the module list will be discarded and rebuilt."
     (when (ignore-errors (require 'perldoc))
       (when (or re-cache (not perldoc-modules-alist))
         (message "Building completion list of all perl modules..."))
-      (perldoc-modules-alist re-cache))))
+      (mapcar (lambda (i) (car i)) (perldoc-modules-alist re-cache)))))
 
 (defun pod-link (link &optional text)
   "Insert a POD hyperlink formatting code.
@@ -415,6 +415,46 @@ that's not whitespace, it will be used as the link title."
                     (concat text "|"))
                   link
                   ">")))
+
+(defun pod-completing-read (prompt choices)
+  "Use `completing-read' to do a completing read."
+  (completing-read prompt choices))
+
+(defun pod-icompleting-read (prompt choices)
+  "Use iswitchb to do a completing read."
+  (let ((iswitchb-make-buflist-hook
+         (lambda ()
+           (setq iswitchb-temp-buflist choices))))
+    (unwind-protect
+        (progn
+          (when (not iswitchb-mode)
+            (add-hook 'minibuffer-setup-hook 'iswitchb-minibuffer-setup))
+          (iswitchb-read-buffer prompt))
+      (when (not iswitchb-mode)
+        (remove-hook 'minibuffer-setup-hook 'iswitchb-minibuffer-setup)))))
+
+(defun pod-ido-completing-read (prompt choices)
+  "Use ido to do a completing read."
+  (ido-completing-read prompt choices))
+
+(defcustom pod-completing-read-function
+  #'pod-icompleting-read
+  "Ask the user to select a single item from a list.
+Used by `pod-link-section', `pod-link-module', and
+`pod-link-module-section'."
+  :group 'pod-mode
+  :type '(radio (function-item
+                 :doc "Use Emacs' standard `completing-read' function."
+                 pod-completing-read)
+                (function-item :doc "Use iswitchb's completing-read function."
+                               pod-icompleting-read)
+                (function-item :doc "Use ido's completing-read function."
+                               pod-ido-completing-read)
+                (function)))
+
+(defun pod-do-completing-read (prompt choices)
+  "Do a completing read with the configured `pod-completing-read-function'."
+  (funcall pod-completing-read-function prompt choices))
 
 (defun pod-link-uri (uri &optional text)
   "Insert POD hyperlink formatting code for a URL.
@@ -432,13 +472,13 @@ minibuffer."
 Insert an L<> formatting code pointing to a section within the
 current document.
 
-When called interactively, SECTION and TEXT will be read from the
-minibuffer.
+When called interactively, SECTION and TEXT will be read using
+`pod-do-completing-read'.
 
-For SECTION, `pod-linkable-sections' will be used to provide
-completions within the minibuffer."
+When reading SECTION, `pod-linkable-sections' will be used to
+provide completions."
   (interactive
-   (list (completing-read "Section: " (pod-linkable-sections) nil nil)
+   (list (pod-do-completing-read "Section: " (pod-linkable-sections))
          (read-string "Text: ")))
   (pod-link-module-section "" section text))
 
@@ -446,14 +486,14 @@ completions within the minibuffer."
   "Insert POD hyperlink formatting code for a module.
 Insert an L<> formatting code pointing to a MODULE.
 
-When called interactively, MODULE and TEXT will be read from the
-minibuffer.
+When called interactively, MODULE and TEXT will be read using
+`pod-do-completing-read'.
 
-When reading MODULE from the minibuffer, `pod-linkable-modules'
-will be used to provide completions."
+When reading MODULE, `pod-linkable-modules' will be used to
+provide completions."
   (interactive
-   (list (completing-read "Module: "
-                          (pod-linkable-modules current-prefix-arg) nil nil)
+   (list (pod-do-completing-read "Module: "
+                                 (pod-linkable-modules current-prefix-arg))
          (read-string "Text: ")))
   (pod-link module text))
 
@@ -463,17 +503,17 @@ Insert an L<> formatting code pointing to a part of MODULE
 documentation as described by SECTION.
 
 When called interactive, MODULE, SECTION, and TEXT will be read
-from the minibuffer.
+using `pod-do-completing-read'.
 
-When reading MODULE and SECTION from the minibuffer,
-`pod-linkable-modules' and `pod-linkable-sections', respectively,
-will be used to provide completions."
+When reading MODULE and SECTION, `pod-linkable-modules' and
+`pod-linkable-sections', respectively, will be used to provide
+completions."
   (interactive
-   (let ((module (completing-read "Module: "
-                                  (pod-linkable-modules current-prefix-arg)
-                                  nil nil)))
+   (let ((module (pod-do-completing-read
+                  "Module: "
+                  (pod-linkable-modules current-prefix-arg))))
      (list module
-           (completing-read "Section: " (pod-linkable-sections module) nil nil)
+           (pod-do-completing-read "Section: " (pod-linkable-sections module))
            (read-string "Text: "))))
   (pod-link
    (concat module
