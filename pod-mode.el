@@ -568,15 +568,17 @@ completions."
                                       (+ (point) 5)
                                       (+ (point) 6)))))))))))
 
-(defun pod-add-support-for-imenu ()
-  "Set up `imenu-generic-expression' for pod section commands."
+(defun pod-add-support-for-imenu (&rest sections)
+  "Set up `imenu-generic-expression' for pod section commands.
+SECTIONS can be used to supply section commands in addition to
+the POD defaults."
   (setq imenu-generic-expression
         `((nil ,(concat
                  "^="
                  (regexp-opt
                   (append
                    (loop for i from 1 to 4 collect (format "head%d" i))
-                   '("item")))
+                   '("item") sections))
                  "\s+\\(.*\\)") 1))))
 
 (defun pod-enable-weaver-collector-keywords (collectors)
@@ -606,19 +608,17 @@ Also updates `pod-weaver-section-keywords', `outline-regexp', and
                                  (match-string-no-properties 1 new-name)))
                   when (string-match "^item$" new-name)
                   collect (cons (symbol-name cmd) 5)))
-      (let ((section-regexp
-             (concat "="
-                     (regexp-opt
-                      (append
-                       (mapcar (lambda (i) (car i))
-                               pod-weaver-section-keywords)
-                       (loop for i from 1 to 4
-                             collect (format "head%d" i))
-                       '("item")))
-                     "\s+")))
-        (setf outline-regexp section-regexp)
-        (setf imenu-generic-expression
-              `((nil ,(concat "^" section-regexp "\\(.*\\)") 1))))
+      (let ((sections (mapcar (lambda (i) (car i))
+                              pod-weaver-section-keywords)))
+        (setf outline-regexp (concat "="
+                                     (regexp-opt
+                                      (append
+                                       sections
+                                       (loop for i from 1 to 4
+                                             collect (format "head%d" i))
+                                       '("item")))
+                                     "\s+"))
+        (apply #'pod-add-support-for-imenu sections))
       (setf
        pod-font-lock-keywords
        (append
