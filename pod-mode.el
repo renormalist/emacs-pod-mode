@@ -538,15 +538,19 @@ completions."
     st)
   "Syntax table for `pod-mode'.")
 
-(defun pod-add-support-for-outline-minor-mode ()
+(defun pod-add-support-for-outline-minor-mode (&rest sections)
   "Provides additional menus from section commands for function
-`outline-minor-mode'."
+`outline-minor-mode'.
+
+SECTIONS can be used to supply section commands in addition to
+the POD defaults."
   (make-local-variable 'outline-regexp)
   (setq outline-regexp
         (concat
+         "="
          (regexp-opt
-          (append (loop for i from 1 to 4 collect (format "=head%d" i))
-                  '("=item")))
+          (append (loop for i from 1 to 4 collect (format "head%d" i))
+                  '("item") sections))
          "\s"))
   (make-local-variable 'outline-level)
   (setq outline-level
@@ -610,14 +614,7 @@ Also updates `pod-weaver-section-keywords', `outline-regexp', and
                   collect (cons (symbol-name cmd) 5)))
       (let ((sections (mapcar (lambda (i) (car i))
                               pod-weaver-section-keywords)))
-        (setf outline-regexp (concat "="
-                                     (regexp-opt
-                                      (append
-                                       sections
-                                       (loop for i from 1 to 4
-                                             collect (format "head%d" i))
-                                       '("item")))
-                                     "\s+"))
+        (apply #'pod-add-support-for-outline-minor-mode sections)
         (apply #'pod-add-support-for-imenu sections))
       (setf
        pod-font-lock-keywords
