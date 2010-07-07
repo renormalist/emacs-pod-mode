@@ -706,8 +706,8 @@ Turning on pod mode calls the hooks in `pod-mode-hook'."
                    (loop for i from 1 to 4 collect (format "head%d" i))
                    '("item")))
                 "\s+\\(.*\\)") 1)))
-  (run-hooks 'pod-mode-hook)
   (pod-add-support-for-outline-minor-mode)
+  (run-hooks 'pod-mode-hook)
   (pod-add-support-for-weaver)
   )
 
