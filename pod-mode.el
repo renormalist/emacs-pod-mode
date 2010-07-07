@@ -605,33 +605,33 @@ Also updates `pod-weaver-section-keywords', `outline-regexp', and
                                 (string-to-number
                                  (match-string-no-properties 1 new-name)))
                   when (string-match "^item$" new-name)
-                  collect (cons (symbol-name cmd) 5)))
-      (let ((sections (mapcar (lambda (i) (car i))
-                              pod-weaver-section-keywords)))
-        (apply #'pod-add-support-for-outline-minor-mode sections)
-        (apply #'pod-add-support-for-imenu sections))
-      (setf
-       pod-font-lock-keywords
-       (append
-        pod-font-lock-keywords
-        (mapcar (lambda (i)
-                  (append
-                   (list (format "^\\(=%s\\)\\(.*\\)"
-                          (regexp-opt (mapcar (lambda (k) (symbol-name k))
-                                              (cdr i)))))
-                   (let ((n (symbol-name (car i))))
-                     (if (string-match-p "^head[1-4]$" n)
-                         (list
-                          `(1 (quote
-                               ,(intern (format "pod-mode-%s-face" n))))
-                          `(2 (quote
-                               ,(intern (format "pod-mode-%s-text-face" n)))))
+                  collect (cons (symbol-name cmd) 5))))
+    (let ((sections (mapcar (lambda (i) (car i))
+                            pod-weaver-section-keywords)))
+      (apply #'pod-add-support-for-outline-minor-mode sections)
+      (apply #'pod-add-support-for-imenu sections))
+    (setf
+     pod-font-lock-keywords
+     (append
+      pod-font-lock-keywords
+      (mapcar (lambda (i)
+                (append
+                 (list (format "^\\(=%s\\)\\(.*\\)"
+                               (regexp-opt (mapcar (lambda (k) (symbol-name k))
+                                                   (cdr i)))))
+                 (let ((n (symbol-name (car i))))
+                   (if (string-match-p "^head[1-4]$" n)
                        (list
-                        '(1 'pod-mode-command-face)
-                        '(2 'pod-mode-command-text-face))))))
-                collectors-by-replacement)))
-      (setq font-lock-mode-major-mode nil)
-      (font-lock-fontify-buffer))))
+                        `(1 (quote
+                             ,(intern (format "pod-mode-%s-face" n))))
+                        `(2 (quote
+                             ,(intern (format "pod-mode-%s-text-face" n)))))
+                     (list
+                      '(1 'pod-mode-command-face)
+                      '(2 'pod-mode-command-text-face))))))
+              collectors-by-replacement)))
+    (setq font-lock-mode-major-mode nil)
+    (font-lock-fontify-buffer)))
 
 (defun pod-enable-weaver-features (buffer weaver-config)
   "Enable support for Pod::Weaver features.
