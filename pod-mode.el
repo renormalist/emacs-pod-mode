@@ -618,7 +618,7 @@ Also updates `pod-weaver-section-keywords', `outline-regexp', and
                   (append
                    (list (format "^\\(=%s\\)\\(.*\\)"
                           (regexp-opt (mapcar (lambda (k) (symbol-name k))
-                                              (cdr i))))
+                                              (cdr i)))))
                    (let ((n (symbol-name (car i))))
                      (if (string-match-p "^head[1-4]$" n)
                          (list
@@ -629,9 +629,9 @@ Also updates `pod-weaver-section-keywords', `outline-regexp', and
                        (list
                         '(1 'pod-mode-command-face)
                         '(2 'pod-mode-command-text-face))))))
-                collectors-by-replacement))))
-    (setq font-lock-mode-major-mode nil)
-    (font-lock-fontify-buffer)))
+                collectors-by-replacement)))
+      (setq font-lock-mode-major-mode nil)
+      (font-lock-fontify-buffer))))
 
 (defun pod-enable-weaver-features (buffer weaver-config)
   "Enable support for Pod::Weaver features.
