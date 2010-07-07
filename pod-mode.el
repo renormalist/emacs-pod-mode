@@ -567,6 +567,18 @@ completions."
                    (string-to-number (buffer-substring
                                       (+ (point) 5)
                                       (+ (point) 6)))))))))))
+
+(defun pod-add-support-for-imenu ()
+  "Set up `imenu-generic-expression' for pod section commands."
+  (setq imenu-generic-expression
+        `((nil ,(concat
+                 "^="
+                 (regexp-opt
+                  (append
+                   (loop for i from 1 to 4 collect (format "head%d" i))
+                   '("item")))
+                 "\s+\\(.*\\)") 1))))
+
 (defun pod-enable-weaver-collector-keywords (collectors)
   "Enable support for Pod::Weaver collector commands.
 Enables fontification for all commands described by COLLECTORS.
@@ -698,14 +710,7 @@ Turning on pod mode calls the hooks in `pod-mode-hook'."
   (setq font-lock-defaults '(pod-font-lock-keywords 't))
   (setq major-mode 'pod-mode)
   (setq mode-name "POD")
-  (setq imenu-generic-expression
-        `((nil ,(concat
-                 "^="
-                 (regexp-opt
-                  (append
-                   (loop for i from 1 to 4 collect (format "head%d" i))
-                   '("item")))
-                "\s+\\(.*\\)") 1)))
+  (pod-add-support-for-imenu)
   (pod-add-support-for-outline-minor-mode)
   (run-hooks 'pod-mode-hook)
   (pod-add-support-for-weaver)
