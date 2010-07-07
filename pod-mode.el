@@ -226,10 +226,9 @@ escapes."
              `(,(format "^\\(=head%d\\)\\(.*\\)" n)
                (1 (quote ,head-face-name))
                (2 (quote ,text-face-name)))))
-     `((,(concat "^\\(="
+     `((,(format "^\\(=%s\\)\\(.*\\)"
                  (regexp-opt '("item" "over" "back" "cut" "pod"
-                               "for" "begin" "end" "encoding"))
-                 "\\)\\(.*\\)")
+                               "for" "begin" "end" "encoding")))
         (1 'pod-mode-command-face)
         (2 'pod-mode-command-text-face))))
     "Minimal highlighting expressions for POD mode."))
@@ -339,14 +338,13 @@ additional pod commands."
       (save-match-data
         (goto-char (point-min))
         (loop while (re-search-forward
-                     (concat "^="
+                     (format "^=%s\s+\\(.*\\)$"
                              (regexp-opt
                               (append
                                (loop for i from 1 to 4
                                      collect (format "head%d" i))
                                '("item")
-                               section-keywords))
-                             "\s+\\(.*\\)$")
+                               section-keywords)))
                      nil t)
               collect (match-string-no-properties 1))))))
 
@@ -546,44 +544,40 @@ SECTIONS can be used to supply section commands in addition to
 the POD defaults."
   (make-local-variable 'outline-regexp)
   (setq outline-regexp
-        (concat
-         "="
+        (format "=%s\s"
          (regexp-opt
           (append (loop for i from 1 to 4 collect (format "head%d" i))
-                  '("item") sections))
-         "\s"))
+                  '("item") sections))))
   (make-local-variable 'outline-level)
   (setq outline-level
         (function
          (lambda ()
            (save-excursion
              (save-match-data
-               (if (looking-at
-                    (concat "^="
-                            (regexp-opt
-                             (mapcar (lambda (i) (car i))
-                                     pod-weaver-section-keywords) t)
-                            "\s"))
+               (let ((sect (format "^=%s\s"
+                                   (regexp-opt
+                                    (mapcar (lambda (i) (car i))
+                                            pod-weaver-section-keywords) t))))
+                 (cond
+                  ((looking-at sect)
                    (cdr (assoc (match-string-no-properties 1)
-                               pod-weaver-section-keywords))
-                 (if (looking-at "^=item\s")
-                     5
-                   (string-to-number (buffer-substring
+                               pod-weaver-section-keywords)))
+                  ((looking-at "^=item\s") 5)
+                  ((string-to-number (buffer-substring
                                       (+ (point) 5)
-                                      (+ (point) 6)))))))))))
+                                      (+ (point) 6))))))))))))
 
 (defun pod-add-support-for-imenu (&rest sections)
   "Set up `imenu-generic-expression' for pod section commands.
 SECTIONS can be used to supply section commands in addition to
 the POD defaults."
   (setq imenu-generic-expression
-        `((nil ,(concat
-                 "^="
-                 (regexp-opt
-                  (append
-                   (loop for i from 1 to 4 collect (format "head%d" i))
-                   '("item") sections))
-                 "\s+\\(.*\\)") 1))))
+        `((nil ,(format "^=%s\s+\\(.*\\)"
+                        (regexp-opt
+                         (append
+                          (loop for i from 1 to 4 collect (format "head%d" i))
+                          '("item") sections)))
+               1))))
 
 (defun pod-enable-weaver-collector-keywords (collectors)
   "Enable support for Pod::Weaver collector commands.
@@ -622,11 +616,9 @@ Also updates `pod-weaver-section-keywords', `outline-regexp', and
         pod-font-lock-keywords
         (mapcar (lambda (i)
                   (append
-                   (list (concat
-                          "^\\(="
+                   (list (format "^\\(=%s\\)\\(.*\\)"
                           (regexp-opt (mapcar (lambda (k) (symbol-name k))
-                                              (cdr i)))
-                          "\\)\\(.*\\)"))
+                                              (cdr i))))
                    (let ((n (symbol-name (car i))))
                      (if (string-match-p "^head[1-4]$" n)
                          (list
