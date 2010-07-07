@@ -343,7 +343,8 @@ additional pod commands."
                              (regexp-opt
                               (append
                                (loop for i from 1 to 4
-                                     collect (concat "head" (int-to-string i)))
+                                     collect (format "head%d" i))
+                               '("item")
                                section-keywords))
                              "\s+\\(.*\\)$")
                      nil t)
@@ -452,9 +453,9 @@ Used by `pod-link-section', `pod-link-module', and
                                pod-ido-completing-read)
                 (function)))
 
-(defun pod-do-completing-read (prompt choices)
+(defun pod-do-completing-read (&rest args)
   "Do a completing read with the configured `pod-completing-read-function'."
-  (funcall pod-completing-read-function prompt choices))
+  (apply pod-completing-read-function args))
 
 (defun pod-link-uri (uri &optional text)
   "Insert POD hyperlink formatting code for a URL.
@@ -538,9 +539,15 @@ completions."
   "Syntax table for `pod-mode'.")
 
 (defun pod-add-support-for-outline-minor-mode ()
-  "Provides additional menus from section commands for function `outline-minor-mode'."
+  "Provides additional menus from section commands for function
+`outline-minor-mode'."
   (make-local-variable 'outline-regexp)
-  (setq outline-regexp "=head[1-4]\s")
+  (setq outline-regexp
+        (concat
+         (regexp-opt
+          (append (loop for i from 1 to 4 collect (format "=head%d" i))
+                  '("=item")))
+         "\s"))
   (make-local-variable 'outline-level)
   (setq outline-level
         (function
@@ -555,10 +562,11 @@ completions."
                             "\s"))
                    (cdr (assoc (match-string-no-properties 1)
                                pod-weaver-section-keywords))
-                 (string-to-number (buffer-substring
-                                    (+ (point) 5)
-                                    (+ (point) 6))))))))))
-
+                 (if (looking-at "^=item\s")
+                     5
+                   (string-to-number (buffer-substring
+                                      (+ (point) 5)
+                                      (+ (point) 6)))))))))))
 (defun pod-enable-weaver-collector-keywords (collectors)
   "Enable support for Pod::Weaver collector commands.
 Enables fontification for all commands described by COLLECTORS.
@@ -583,7 +591,9 @@ Also updates `pod-weaver-section-keywords', `outline-regexp', and
                   when (string-match "^head\\([1-4]\\)$" new-name)
                   collect (cons (symbol-name cmd)
                                 (string-to-number
-                                 (match-string-no-properties 1 new-name)))))
+                                 (match-string-no-properties 1 new-name)))
+                  when (string-match "^item$" new-name)
+                  collect (cons (symbol-name cmd) 5)))
       (let ((section-regexp
              (concat "="
                      (regexp-opt
@@ -591,7 +601,8 @@ Also updates `pod-weaver-section-keywords', `outline-regexp', and
                        (mapcar (lambda (i) (car i))
                                pod-weaver-section-keywords)
                        (loop for i from 1 to 4
-                             collect (concat "head" (int-to-string i)))))
+                             collect (format "head%d" i))
+                       '("item")))
                      "\s+")))
         (setf outline-regexp section-regexp)
         (setf imenu-generic-expression
@@ -687,7 +698,14 @@ Turning on pod mode calls the hooks in `pod-mode-hook'."
   (setq font-lock-defaults '(pod-font-lock-keywords 't))
   (setq major-mode 'pod-mode)
   (setq mode-name "POD")
-  (setq imenu-generic-expression '((nil "^=head[1-4] +\\(.*\\)" 1)))
+  (setq imenu-generic-expression
+        `((nil ,(concat
+                 "^="
+                 (regexp-opt
+                  (append
+                   (loop for i from 1 to 4 collect (format "head%d" i))
+                   '("item")))
+                "\s+\\(.*\\)") 1)))
   (run-hooks 'pod-mode-hook)
   (pod-add-support-for-outline-minor-mode)
   (pod-add-support-for-weaver)
