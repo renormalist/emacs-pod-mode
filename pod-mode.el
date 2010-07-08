@@ -548,22 +548,21 @@ the POD defaults."
                   '("item") sections))))
   (make-local-variable 'outline-level)
   (setq outline-level
-        (function
-         (lambda ()
-           (save-excursion
-             (save-match-data
-               (let ((sect (format "^=%s\s"
-                                   (regexp-opt
-                                    (mapcar (lambda (i) (car i))
-                                            pod-weaver-section-keywords) t))))
-                 (cond
-                  ((looking-at sect)
-                   (cdr (assoc (match-string-no-properties 1)
-                               pod-weaver-section-keywords)))
-                  ((looking-at "^=item\s") 5)
-                  ((string-to-number (buffer-substring
-                                      (+ (point) 5)
-                                      (+ (point) 6))))))))))))
+        (lambda ()
+          (save-excursion
+            (save-match-data
+              (let ((sect (format "^=%s\s"
+                                  (regexp-opt
+                                   (mapcar (lambda (i) (car i))
+                                           pod-weaver-section-keywords) t))))
+                (cond
+                 ((looking-at sect)
+                  (cdr (assoc (match-string-no-properties 1)
+                              pod-weaver-section-keywords)))
+                 ((looking-at "^=item\s") 5)
+                 ((string-to-number (buffer-substring
+                                     (+ (point) 5)
+                                     (+ (point) 6)))))))))))
 
 (defun pod-add-support-for-imenu (&rest sections)
   "Set up `imenu-generic-expression' for pod section commands.
@@ -700,8 +699,7 @@ Turning on pod mode calls the hooks in `pod-mode-hook'."
   (pod-add-support-for-imenu)
   (pod-add-support-for-outline-minor-mode)
   (run-hooks 'pod-mode-hook)
-  (pod-add-support-for-weaver)
-  )
+  (pod-add-support-for-weaver))
 
 (provide 'pod-mode)
 
