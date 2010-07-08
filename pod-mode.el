@@ -613,7 +613,6 @@ Also updates `pod-weaver-section-keywords', `outline-regexp', and
     (setf
      pod-font-lock-keywords
      (append
-      pod-font-lock-keywords
       (mapcar (lambda (i)
                 (append
                  (list (format "^\\(=%s\\)\\(.*\\)"
@@ -629,7 +628,8 @@ Also updates `pod-weaver-section-keywords', `outline-regexp', and
                      (list
                       '(1 'pod-mode-command-face)
                       '(2 'pod-mode-command-text-face))))))
-              collectors-by-replacement)))
+              collectors-by-replacement)
+      pod-font-lock-keywords))
     (setq font-lock-mode-major-mode nil)
     (font-lock-fontify-buffer)))
 
