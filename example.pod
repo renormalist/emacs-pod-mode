@@ -48,16 +48,23 @@ Exercise some Affe dance.
 
 C<<< Quite I<< funky B<Zomtec> >> >>>
 
-=method C<<< moo I<< foo B<bar> >> >>>
+=method C<<< moo I<< foo->B<bar> >> >>>
+
+Bla.
 
 =func C<<< moo I<< foo B<bar> >> >>>
 
+Fasel.
+
 =attr C<<< moo I<< foo B<bar> >> >>>
+
+Bummer!
 
 =head1 C<<< moo I<< foo B<bar> >> >>>
 
+Kram.
 
-=head2 The Some code examples
+=head2 Some code examples
 
 
   # a verbatim block
