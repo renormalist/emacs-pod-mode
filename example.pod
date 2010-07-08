@@ -15,6 +15,19 @@ See this:
   # categories, therefore 9 learnes in each of the 99 categories, and in
   # each following level 9 more learners for each category.
 
+=head1 some nested headings ahead
+
+=head2 Affe
+
+Quite funky.
+
+=head2 Zomtec
+
+Me too.
+
+=head2 The rest
+
+
   # a verbatim block
   sub cut { 42 }
   my $foo = cut();

@@ -1,3 +1,18 @@
+2010-07-08  Steffen Schwigon  <ss5@renormalist.net>
+
+	* v1.02
+
+	* pod-mode taken over by a lambda ninja :-)
+
+	* Big rework and improvements by Florian Ragwitz:
+	- introduce customizable, pod-specific faces
+	- new set of default fonts and sizes
+	- interactive commands/keybinds to create link formatting codes
+	- support weaver keywords for outline and imenu
+	- improve documentation
+	- support for balanced and nested formatting codes
+	- make Pod::Weaver command highlighting more robust
+
 2010-06-02  Steffen Schwigon  <ss5@renormalist.net>
 
 	* v1.01
