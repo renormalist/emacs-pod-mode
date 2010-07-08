@@ -1,58 +1,6 @@
  # directly start with
  # some verbatim stuff
 
-=head1 NAME - foo bar
-
- # Single verbatim line
-
-=head1 SYNOPSIS
-
-See this:
-
-  # If all possible cpv numbers possible with 8 digits would be used, the
-  # tree would have one root level learner categorizing into 99
-  # categories, 99 learners at the next level each categorizing into 9
-  # categories, therefore 9 learnes in each of the 99 categories, and in
-  # each following level 9 more learners for each category.
-
-=head1 some nested headings ahead
-
-=head2 Affe
-
-Quite funky.
-
-=head2 Zomtec
-
-Me too.
-
-=head2 The rest
-
-
-  # a verbatim block
-  sub cut { 42 }
-  my $foo = cut();
-  sub affe {
-          do_something_strong($foo, $zomtec, @tiger);
-          print STDERR $foo, "\n";
-  }
-
-  # another verbatim block after a single empty line
-  # although that is not the only reason for confusion
-  affe();
-  sub kram {
-          foo($kram);
-  }
-
-  If all possible cpv numbers possible with 8 digits would be used, the
-  tree would have one root level learner categorizing into 99
-  categories, 99 learners at the next level each categorizing into 9
-  categories, therefore 9 learnes in each of the 99 categories, and in
-  each following level 9 more learners for each category.
-
-=cut
-
-=pod 
-
 =head1 NAME
 
 LibCPV::Categorizer - Class for Hierarchical CPV-Number
@@ -92,43 +40,46 @@ hierarchically built. The first 2 digits form a common level of
 accuracy, then each following digit forms another accuracy level.
 We derive the word "group" from that accuracy level definition.
 
-B<document> - a single class transporting the content of a single
-textblock that is assigned to zero, one or more categories.
+=func Affe
 
-B<document set> - mainly a collection of documents, with additional
-functions to work on the set.
+Exercise some Affe dance.
 
-B<group> - A group is a set of documents each belonging to a cpv
-number that starts with the same first digits of a given precision
-(see it as kind of a "cpv prefix").
+=method Zomtec
 
-B<sub group> - A group of documents that have one more digit in
-accuracy than a given cpv or document.
+C<<< Quite I<< funky B<Zomtec> >> >>>
 
-How we do training:
+=method C<<< moo I<< foo B<bar> >> >>>
 
-We have a learner instance on root level which only knows categories
-containing of the first two digits of a cpv. All documents are
-considered by that learner. Those two digit accuracy gives
-theoretically a maximum of 99 groups, in real live there are only
-about 25 groups.
+=func C<<< moo I<< foo B<bar> >> >>>
 
-Each group gets its own learner instance which trains only with the
-documents in that group and categorizes into (maximally) 9 sub
-categories, which is the next digit of the cpv.
+=attr C<<< moo I<< foo B<bar> >> >>>
 
-So the document set creates a tree of learners.
+=head1 C<<< moo I<< foo B<bar> >> >>>
 
-If all possible cpv numbers possible with 8 digits would be used, the
-tree would have one root level learner categorizing into 99
-categories, 99 learners at the next level each categorizing into 9
-categories, therefore 9 learnes in each of the 99 categories, and in
-each following level 9 more learners for each category.
 
-That would result in 100.000.000 (100 Millions) categories or learners
-at the last level. In real live there are only about 8000 categories
-used so the last level has maximal those 8000 categories and each
-level above some less. 
+=head2 The Some code examples
+
+
+  # a verbatim block
+  sub cut { 42 }
+  my $foo = cut();
+  sub affe {
+          do_something_strong($foo, $zomtec, @tiger);
+          print STDERR $foo, "\n";
+  }
+
+  # another verbatim block after a single empty line
+  # although that is not the only reason for confusion
+  affe();
+  sub kram {
+          foo($kram);
+  }
+
+  If all possible cpv numbers with 8 digits would be used, the tree
+  would have one root level learner categorizing into 99 categories,
+  99 learners at the next level each categorizing into 9 categories,
+  therefore 9 learnes in each of the 99 categories, and in each
+  following level 9 more learners for each category.
 
 =cut
 
