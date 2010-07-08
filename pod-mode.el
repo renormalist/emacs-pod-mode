@@ -50,9 +50,7 @@
 ;;;
 ;;; To associate pod-mode with .pod files add the following to your ~/.emacs
 ;;;
-;;;    (setq auto-mode-alist
-;;;       (append auto-mode-alist
-;;;         '(("\\.pod$" . pod-mode))))
+;;;    (add-to-list 'auto-mode-alist '("\\.pod$" . pod-mode))
 ;;;
 ;;;
 ;;; To automatically turn on font-lock-mode add the following to your ~/.emacs
