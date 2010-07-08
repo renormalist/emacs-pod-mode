@@ -1,3 +1,11 @@
+2010-07-08  Florian Ragwitz  <rafl@debian.org>
+
+	* v1.03
+
+	* Provide better dist metadata
+
+	* Don't ship example.pod with the dist
+
 2010-07-08  Steffen Schwigon  <ss5@renormalist.net>
 
 	* v1.02
