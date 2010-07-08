@@ -1,4 +1,4 @@
 pod-mode-*.*.tgz
 pod-mode-*.*.tar.gz
 pod-mode-*.*
-
+.build/
